@@ -1,6 +1,6 @@
 -- // Lib \\ --
 --[[
-    local UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/i3wF/Abyss-Lib/main/Abyss%20Lib%20Source.lua"))()
+    local UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/Ceypi/AnotherLibrary/main/Library.lua"))()
 ]]
 -- // Library Init \\ --
 local Start = tick()
