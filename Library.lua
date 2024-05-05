@@ -1,1348 +1,4280 @@
-local lib = {}
+-- // Lib \\ --
+--[[
+    local UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/i3wF/Abyss-Lib/main/Abyss%20Lib%20Source.lua"))()
+]]
+-- // Library Init \\ --
+local Start = tick()
+local LoadTime = tick()
+local Secure = setmetatable({}, {
+    __index = function(Idx, Val)
+        return game:GetService(Val)
+    end
+})
+--
+local UserInput = Secure.UserInputService
+local RunService = Secure.RunService
+local CoreGui = Secure.CoreGui
+local Players = Secure.Players
+local LocalPlayer = Players.LocalPlayer
+local Camera = Workspace.CurrentCamera
+local HttpService = Secure.HttpService
+local Mouse = LocalPlayer:GetMouse()
+local InputGUI = Instance.new("ScreenGui", CoreGui)
+-- local Stats = Secure.Stats.Network.ServerStatsItem["Data Ping"] 
+--
+-- Aimware = {6, [[{"Outline":"000005","Accent":"c82828","LightText":"e8e8e8","DarkText":"afafaf","LightContrast":"2b2b2b","CursorOutline":"191919","DarkContrast":"191919","TextBorder":"0a0a0a","Inline":"373737"}]]},
+--
+local Library = {
+    Theme = {
+        Accent = {
+            Color3.fromHex("#7885f5"), -- Color3.fromHex("#a280d9"), -- Color3.fromRGB(255, 42, 10), Color3.fromHex("#3599d4")
+            Color3.fromRGB(180, 156, 255),
+            Color3.fromRGB(114, 0, 198),
+            Color3.fromRGB(139, 130, 185),
+            Color3.fromHex("#a83299")
+        },
+        Notification = {
+            Error = Color3.fromHex("#c82828"),
+            Warning = Color3.fromHex("#fc9803")
+        },
+        Hitbox = Color3.fromRGB(69, 69, 69),
+        Friend = Color3.fromRGB(0, 200, 0),
+        Outline = Color3.fromHex("#000005"),
+        Inline = Color3.fromHex("#323232"),
+        LightContrast = Color3.fromHex("#202020"),
+        DarkContrast = Color3.fromHex("#191919"),
+        Text = Color3.fromHex("#e8e8e8"),
+        TextInactive = Color3.fromHex("#aaaaaa"),
+        Font = Drawing.Fonts.Plex,
+        TextSize = 13,
+        UseOutline = false
+    },
+    Icons = {},
+    Flags = {},
+    Items = {},
+    Drawings = {},
+    Ignores = {},
+    Keybind = {},
+    Watermark = {},
+    Connections = {},
+    Keys = {
+        KeyBoard = {["Q"] = "Q", ["W"] = "W", ["E"] = "E", ["R"] = "R", ["T"] = "T", ["Y"] = "Y", ["U"] = "U", ["I"] = "I", ["O"] = "O", ["P"] = "P", ["A"] = "A", ["S"] = "S", ["D"] = "D", ["F"] = "F", ["G"] = "G", ["H"] = "H", ["J"] = "J", ["K"] = "K", ["L"] = "L", ["Z"] = "Z", ["X"] = "X", ["C"] = "C", ["V"] = "V", ["B"] = "B", ["N"] = "N", ["M"] = "M", ["One"] = {"1", "!"}, ["Two"] = {"2", "\""}, ["Three"] = {"3", "£"}, ["Four"] = {"4", "$"}, ["Five"] = {"5", "%"}, ["Six"] = {"6", "^"}, ["Seven"] = {"7", "&"}, ["Eight"] = {"8", "*"}, ["Nine"] = {"9", "("}, ["Zero"] = {"0", ")"}, ["Space"] = " ", ["Slash"] = {"/", "?"}, ["BackSlash"] = {"\\", "|"}, ["Minus"] = {"-", "_"}, ["Equals"] = {"=", "+"}, ["RightBracket"] = {"]", "}"}, ["LeftBracket"] = {"[", "{"}, ["Semicolon"] = {";", ":"}, ["Quote"] = {"'", "@"}, ["Comma"] = {",", "<"}, ["Period"] = {".", ">"}},
+        Letters = {"Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "A", "S", "D", "F", "G", "H", "J", "K", "L", "Z", "X", "C", "V", "B", "N", "M"},
+        KeyCodes = {"Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "A", "S", "D", "F", "G", "H", "J", "K", "L", "Z", "X", "C", "V", "B", "N", "M", "One", "Two", "Three", "Four", "Five", "Six", "Seveen", "Eight", "Nine", "Zero", "Insert", "Tab", "Home", "End", "LeftAlt", "LeftControl", "LeftShift", "RightAlt", "RightControl", "RightShift", "CapsLock"},
+        Inputs = {"MouseButton1", "MouseButton2", "MouseButton3"},
+        Shortened = {["MouseButton1"] = "M1", ["MouseButton2"] = "M2", ["MouseButton3"] = "M3", ["Insert"] = "INS", ["LeftAlt"] = "LA", ["LeftControl"] = "LC", ["LeftShift"] = "LS", ["RightAlt"] = "RA", ["RightControl"] = "RC", ["RightShift"] = "RS", ["CapsLock"] = "CL"}
+    },
+    Input = {
+        Caplock = false,
+        LeftShift = false
+    },
+    Images = {},
+    WindowVisible = true,
+    Communication = Instance.new("BindableEvent")
+}
+--
+local Utility = {}
+--
+getgenv().Library = Library
+getgenv().Utility = Utility
 
-lib.init = function(title, accent, togglekey)
-	local window = {}
-	local UILib = Instance.new("ScreenGui")
-	local uiBorder1 = Instance.new("Frame")
-	local uiBorder2 = Instance.new("Frame")
-	local uiBorder3 = Instance.new("Frame")
-	local uiBack = Instance.new("Frame")
-	local uiTop = Instance.new("Frame")
-	local uiTopLine = Instance.new("Frame")
-	local uiNameLabel = Instance.new("TextLabel")
-	local uiBottom = Instance.new("Frame")
-	local uiBottomLine = Instance.new("Frame")
-	local uiSearchButton = Instance.new("ImageLabel")
-	local uiBottomHolder = Instance.new("Frame")
-	local UIListLayout1 = Instance.new("UIListLayout")
-	local uiTabButton = Instance.new("Frame")
-	local uiTabButtonImage = Instance.new("ImageLabel")
-	local uiTabButtonLabel = Instance.new("TextLabel")
-	local uiTabButtonLine = Instance.new("Frame")
-	local uiTabButton_2 = Instance.new("Frame")
-	local uiTabButtonLabel_2 = Instance.new("TextLabel")
-	local uiTabButtonLine_2 = Instance.new("Frame")
-	local uiTabButtonImage_2 = Instance.new("ImageLabel")
-	local Mouse = game.Players.LocalPlayer:GetMouse()
-
-	-- [ Library Variables ] --
-	lib.accentItems = {}
-	lib.titlelabel = uiNameLabel
-	lib.title = title or "primordial"
-	lib.accent = accent or lib.accent
-	lib.togglekey = togglekey or Enum.KeyCode.Insert
-	lib.flags = {}
-	lib.selectedtab = nil
-	lib.selectedtab2 = nil
-	lib.totaltabs = 0
-	lib.tabbuttons = {}
-	lib.visible = true
-	lib.closing = false
-	lib.inDropdown = false
-	lib.tabframes = {}
-	lib.inColorPicker =  false
-
-	UILib.Name = game:GetService("HttpService"):GenerateGUID(false)
-	UILib.Parent = game.CoreGui
-	UILib.ResetOnSpawn = false
-
-	uiBorder1.Name = "uiBorder1"
-	uiBorder1.Parent = UILib
-	uiBorder1.BackgroundColor3 = Color3.fromRGB(27, 22, 20)
-	uiBorder1.BorderSizePixel = 0
-	uiBorder1.Position = UDim2.new(0.25784564, 0, 0.0941759646, 0)
-	uiBorder1.Size = UDim2.new(0, 570, 0, 600)
-	local uiCorner = Instance.new("UICorner",uiBorder1); uiCorner.CornerRadius = UDim.new(0.02,0)
-
-	uiBorder2.Name = "uiBorder2"
-	uiBorder2.Parent = uiBorder1
-	uiBorder2.BackgroundColor3 = Color3.fromRGB(38, 36, 34)
-	uiBorder2.BorderSizePixel = 0
-	uiBorder2.Position = UDim2.new(0, 1, 0, 1)
-	uiBorder2.Size = UDim2.new(0, 568, 0, 598)
-	local uiCorner = Instance.new("UICorner",uiBorder2); uiCorner.CornerRadius = UDim.new(0.02,0)
-
-	uiBorder3.Name = "uiBorder3"
-	uiBorder3.Parent = uiBorder2
-	uiBorder3.BackgroundColor3 = Color3.fromRGB(35, 34, 32)
-	uiBorder3.BorderSizePixel = 0
-	uiBorder3.Position = UDim2.new(0, 1, 0, 1)
-	uiBorder3.Size = UDim2.new(0, 566, 0, 596)
-	local uiCorner = Instance.new("UICorner",uiBorder3); uiCorner.CornerRadius = UDim.new(0.02,0)
-
-	uiBack.Name = "uiBack"
-	uiBack.Parent = uiBorder3
-	uiBack.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-	uiBack.BorderSizePixel = 0
-	uiBack.Position = UDim2.new(0, 1, 0, 1)
-	uiBack.Size = UDim2.new(0, 564, 0, 594)
-	local uiCorner = Instance.new("UICorner",uiBack); uiCorner.CornerRadius = UDim.new(0.02,0)
-
-	uiTop.Name = "uiTop"
-	uiTop.Parent = uiBack
-	uiTop.BackgroundColor3 = Color3.fromRGB(53, 52, 51)
-	uiTop.BorderSizePixel = 0
-	uiTop.Size = UDim2.new(1, 0, 0, 25)
-	local uiCorner = Instance.new("UICorner",uiTop); uiCorner.CornerRadius = UDim.new(0.13,0)
-
-	uiTopLine.Name = "uiTopLine"
-	uiTopLine.Parent = uiTop
-	uiTopLine.BackgroundColor3 = lib.accent
-	uiTopLine.BorderSizePixel = 0
-	uiTopLine.Position = UDim2.new(0, 0, 1, -1)
-	uiTopLine.Size = UDim2.new(1, 0, 0, 2)
-	table.insert(lib.accentItems, uiTopLine)
-
-	uiNameLabel.Name = "uiNameLabel"
-	uiNameLabel.Parent = uiTop
-	uiNameLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	uiNameLabel.BackgroundTransparency = 1.000
-	uiNameLabel.Position = UDim2.new(0.5, -125, 0, 0)
-	uiNameLabel.Size = UDim2.new(0, 250, 1, 0)
-	uiNameLabel.Font = Enum.Font.Arial
-	uiNameLabel.Text = title
-	uiNameLabel.TextColor3 = Color3.fromRGB(191, 191, 191)
-	uiNameLabel.TextSize = 14.000
-	uiNameLabel.TextStrokeColor3 = Color3.fromRGB(14, 14, 14)
-	uiNameLabel.TextStrokeTransparency = 0.350
-
-	uiBottom.Name = "uiBottom"
-	uiBottom.Parent = uiBack
-	uiBottom.BackgroundColor3 = Color3.fromRGB(53, 52, 51)
-	uiBottom.BorderSizePixel = 0
-	uiBottom.Position = UDim2.new(0, 0, 1, -50)
-	uiBottom.Size = UDim2.new(1, 0, 0, 50)
-	local uiCorner = Instance.new("UICorner",uiBottom); uiCorner.CornerRadius = UDim.new(0.13,0)
-
-	uiBottomLine.Name = "uiBottomLine"
-	uiBottomLine.Parent = uiBottom
-	uiBottomLine.BackgroundColor3 = lib.accent
-	uiBottomLine.BorderSizePixel = 0
-	uiBottomLine.Position = UDim2.new(0, 0, 0, -1)
-	uiBottomLine.Size = UDim2.new(1, 0, 0, 2)
-	table.insert(lib.accentItems, uiBottomLine)
-
-	uiSearchButton.Name = "uiSearchButton"
-	uiSearchButton.Parent = uiBottom
-	uiSearchButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	uiSearchButton.BackgroundTransparency = 1.000
-	uiSearchButton.Position = UDim2.new(0, 9, 0.5, -19)
-	uiSearchButton.Size = UDim2.new(0, 40, 0, 40)
-	uiSearchButton.Image = "http://www.roblox.com/asset/?id=8595257169"
-	uiSearchButton.ImageColor3 = Color3.fromRGB(127, 127, 127)
-
-	uiBottomHolder.Name = "uiBottomHolder"
-	uiBottomHolder.Parent = uiBottom
-	uiBottomHolder.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-	uiBottomHolder.BackgroundTransparency = 1.000
-	uiBottomHolder.Position = UDim2.new(0.5, -230, 0, 1)
-	uiBottomHolder.Size = UDim2.new(0, 460, 1, -1)
-
-	UIListLayout1.Name = "UIListLayout1"
-	UIListLayout1.Parent = uiBottomHolder
-	UIListLayout1.FillDirection = Enum.FillDirection.Horizontal
-	UIListLayout1.HorizontalAlignment = Enum.HorizontalAlignment.Center
-	UIListLayout1.SortOrder = Enum.SortOrder.LayoutOrder
-	UIListLayout1.VerticalAlignment = Enum.VerticalAlignment.Center
-	UIListLayout1.Padding = UDim.new(0, 5)
-
-	local dragging
-	local dragInput
-	local dragStart
-	local startPos
-
-	local function update(input)
-		local delta = input.Position - dragStart
-		uiBorder1.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-	end
-
-	uiTop.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-			dragging = true
-			dragStart = input.Position
-			startPos = uiBorder1.Position
-
-			input.Changed:Connect(function()
-				if input.UserInputState == Enum.UserInputState.End then
-					dragging = false
-				end
-			end)
-		end
-	end)
-
-	uiTop.InputChanged:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-			dragInput = input
-		end
-	end)
-
-	game:GetService("UserInputService").InputChanged:Connect(function(input)
-		if input == dragInput and dragging then
-			update(input)
-		end
-	end)
-
-	-- [ Library Functions ] --
-	lib.setAccent = function(color3)
-		if color3 ~= nil and color3.R ~= nil and color3.G ~= nil and color3.B ~= nil then
-			lib.accent = color3
-			for i,v in pairs(lib.accentItems) do
-				if v:IsA("Frame") and v.BackgroundColor3 ~= Color3.fromRGB(35, 35, 35) then
-					v.BackgroundColor3 = lib.accent
-				elseif v:IsA("TextLabel") and v.TextColor3 ~= Color3.fromRGB(208, 208, 208) then
-					v.TextColor3 = lib.accent
-				end
-			end
-		else
-			pcall(function()
-				warn("Invalid color passed as argument for function setAccent: "..tostring(color3))
-			end)
-		end
-	end
-	lib.setToggleKey = function(keycode)
-		if keycode ~= nil and keycode.Name ~= nil then
-			lib.togglekey = keycode
-		else
-			pcall(function()
-				warn("Invalid keycode passed as argument for function setToggleKey: "..tostring(keycode))
-			end)
-		end
-	end
-	lib.setTitle = function(str)
-		if str ~= nil then
-			lib.titlelabel.Text = str
-		else
-			pcall(function()
-				warn("Invalid string passed as argument for function setTitle: "..tostring(str))
-			end)
-		end
-	end
-
-	game:GetService("UserInputService").InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == lib.togglekey and not lib.closing then
-			lib.visible = not lib.visible
-			if lib.visible then
-				UILib.Enabled = true
-			end
-			lib.closing = true
-			if not lib.visible then
-				for i,v in pairs(UILib:GetDescendants()) do
-					if v:IsA("Frame") then
-						game:GetService("TweenService"):Create(v,TweenInfo.new(0.23,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency = 1.000}):Play()
-					elseif v:IsA("TextLabel") then
-						game:GetService("TweenService"):Create(v,TweenInfo.new(0.23,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{TextTransparency = 1.000}):Play()
-						game:GetService("TweenService"):Create(v,TweenInfo.new(0.23,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{TextStrokeTransparency = 1.000}):Play()
-					elseif v:IsA("ImageLabel") then
-						game:GetService("TweenService"):Create(v,TweenInfo.new(0.23,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency = 1.000}):Play()
-						game:GetService("TweenService"):Create(v,TweenInfo.new(0.23,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{ImageTransparency = 1.000}):Play()
-					end
-				end
-			elseif lib.visible then
-				for i,v in pairs(UILib:GetDescendants()) do
-					if v:IsA("Frame") and v.Name ~= "uiBottomHolder" then
-						if v.Name == "uiTabButton" then
-							game:GetService("TweenService"):Create(v,TweenInfo.new(0.23,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency = 1.000}):Play()
-						elseif v.Name == "uiTabButtonLine" then
-							if lib.selectedtab == v.Parent then
-								game:GetService("TweenService"):Create(v,TweenInfo.new(0.23,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency = 0.000}):Play()
-							else
-								game:GetService("TweenService"):Create(v,TweenInfo.new(0.23,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency = 1.000}):Play()
-							end
-						elseif v.Name == "uiTabSectionHolder" then
-							game:GetService("TweenService"):Create(v,TweenInfo.new(0.23,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency = 1.000}):Play()
-						elseif v.Name == "uiSectionButton" then
-							game:GetService("TweenService"):Create(v,TweenInfo.new(0.23,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency = 1.000}):Play()
-						elseif v.Name == "uiSectionSlider" then
-							game:GetService("TweenService"):Create(v,TweenInfo.new(0.23,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency = 1.000}):Play()
-						elseif v.Name == "uiSectionDropdown" then
-							game:GetService("TweenService"):Create(v,TweenInfo.new(0.23,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency = 1.000}):Play()
-						elseif v.Name == "uiSectionColorpicker" then
-							game:GetService("TweenService"):Create(v,TweenInfo.new(0.23,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency = 1.000}):Play()
-						elseif v.Name == "uiSectionButton2" then
-							game:GetService("TweenService"):Create(v,TweenInfo.new(0.23,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency = 1.000}):Play()
-						else
-							game:GetService("TweenService"):Create(v,TweenInfo.new(0.23,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency = 0.000}):Play()
-						end
-					elseif v:IsA("TextLabel") then
-						game:GetService("TweenService"):Create(v,TweenInfo.new(0.23,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{TextTransparency = 0.000}):Play()
-						game:GetService("TweenService"):Create(v,TweenInfo.new(0.23,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{TextStrokeTransparency = 0.350}):Play()
-					elseif v:IsA("ImageLabel") then
-						if v.Name == "transparencyImage" then
-							game:GetService("TweenService"):Create(v,TweenInfo.new(0.23,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency = 1.000}):Play()
-							game:GetService("TweenService"):Create(v,TweenInfo.new(0.23,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{ImageTransparency = 0.89}):Play()
-						else
-							game:GetService("TweenService"):Create(v,TweenInfo.new(0.23,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency = 1.000}):Play()
-							game:GetService("TweenService"):Create(v,TweenInfo.new(0.23,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{ImageTransparency = 0.000}):Play()
-						end
-					end
-				end
-			end
-			task.wait(0.25)
-			if not lib.visible then
-				UILib.Enabled = false
-			end
-			lib.closing = false
-		end
-	end)
-
-	-- [ Tabs ] --
-
-	window.createTab = function(title, image)
-		lib.totaltabs = lib.totaltabs + 1
-		local tab = {}
-		local uiTabButton = Instance.new("Frame")
-		local uiTabButtonLabel = Instance.new("TextLabel")
-		local uiTabButtonLine = Instance.new("Frame")
-		local uiTabButtonImage = Instance.new("ImageLabel")
-		local uiTab = Instance.new("ScrollingFrame")
-		local Frame = Instance.new("Frame")
-		local xl = 0
-		local xr = 0
-		local xs = 0
-
-		uiTabButton.Name = "uiTabButton"
-		uiTabButton.Parent = uiBottomHolder
-		uiTabButton.BackgroundColor3 = Color3.fromRGB(42, 42, 42)
-		uiTabButton.ClipsDescendants = true
-		uiTabButton.BackgroundTransparency = 1.000
-		uiTabButton.BorderSizePixel = 0
-		uiTabButton.Size = UDim2.new(0, 49, 1, 0)
-		uiTabButton.ZIndex = 2
-		table.insert(lib.tabbuttons, uiTabButton)
-		lib.selectedtab2 = uiTab
-
-		uiTabButtonLabel.Name = "uiTabButtonLabel"
-		uiTabButtonLabel.Parent = uiTabButton
-		uiTabButtonLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		uiTabButtonLabel.BackgroundTransparency = 1.000
-		uiTabButtonLabel.Position = UDim2.new(0, 0, 1, -20)
-		uiTabButtonLabel.Size = UDim2.new(1, 0, 0, 20)
-		uiTabButtonLabel.ZIndex = 2
-		uiTabButtonLabel.Font = Enum.Font.Arial
-		uiTabButtonLabel.Text = title
-		uiTabButtonLabel.TextColor3 = Color3.fromRGB(182, 182, 182)
-		uiTabButtonLabel.TextSize = 13.500
-		uiTabButtonLabel.TextStrokeColor3 = Color3.fromRGB(14, 14, 14)
-		uiTabButtonLabel.TextStrokeTransparency = 0.350
-		uiTabButtonLabel.ZIndex = 3
-
-		Frame.Parent = uiTabButton
-		Frame.BackgroundColor3 = Color3.fromRGB(42, 42, 42)
-		Frame.Size = UDim2.new(1, 0, 1, 0)
-		Frame.Position = UDim2.new(0, 0, 0, 49)
-		Frame.BorderSizePixel = 0
-		if lib.totaltabs > 1 then
-		else
-			Frame.Position = UDim2.new(0, 0, 0, 0)
-			lib.selectedtab = uiTabButton
-		end
-		Frame.Visible = true
-		Frame.ZIndex = 2
-
-		uiTabButtonLine.Name = "uiTabButtonLine"
-		uiTabButtonLine.Parent = uiTabButton
-		uiTabButtonLine.BackgroundColor3 = lib.accent
-		if lib.totaltabs > 1 then
-			uiTabButtonLine.BackgroundTransparency = 1.000
-		else
-			uiTabButtonLine.BackgroundTransparency = 0.000
-		end
-		uiTabButtonLine.BorderSizePixel = 0
-		uiTabButtonLine.Position = UDim2.new(0, 0, 1, -2)
-		uiTabButtonLine.Size = UDim2.new(1, 0, 0, 2)
-		uiTabButtonLine.ZIndex = 2
-		table.insert(lib.accentItems, uiTabButtonLine)
-
-		uiTabButtonImage.Name = "uiTabButtonImage"
-		uiTabButtonImage.Parent = uiTabButton
-		uiTabButtonImage.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		uiTabButtonImage.BackgroundTransparency = 1.000
-		uiTabButtonImage.Position = UDim2.new(0.5, -13, 0, 5)
-		uiTabButtonImage.Size = UDim2.new(0, 26, 0, 26)
-		uiTabButtonImage.Image = image
-		uiTabButtonImage.ImageColor3 = Color3.fromRGB(182, 182, 182)
-		uiTabButtonImage.ScaleType = Enum.ScaleType.Fit
-		uiTabButtonImage.ZIndex = 2
-
-		uiTabButton.InputBegan:Connect(function(input)
-			if input.UserInputType == Enum.UserInputType.MouseButton1 then
-				if lib.selectedtab ~= uiTabButton then
-					lib.selectedtab = uiTabButton
-					for i,v in pairs(lib.tabbuttons) do
-						if v ~= uiTabButton then
-							game:GetService("TweenService"):Create(v.Frame,TweenInfo.new(0.33,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Position = UDim2.new(0, 0, 0, 49)}):Play()
-							game:GetService("TweenService"):Create(v.uiTabButtonLine,TweenInfo.new(0.33,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency = 1.000}):Play()
-							game:GetService("TweenService"):Create(v.uiTabButtonLabel,TweenInfo.new(0.33,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{TextColor3 = Color3.fromRGB(182, 182, 182)}):Play()
-							game:GetService("TweenService"):Create(v.uiTabButtonImage,TweenInfo.new(0.33,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{ImageColor3 = Color3.fromRGB(182, 182, 182)}):Play()
-						else
-							game:GetService("TweenService"):Create(v.Frame,TweenInfo.new(0.33,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Position = UDim2.new(0, 0, 0, 0)}):Play()
-							game:GetService("TweenService"):Create(v.uiTabButtonLine,TweenInfo.new(0.33,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency = 0.000}):Play()
-							game:GetService("TweenService"):Create(v.uiTabButtonLabel,TweenInfo.new(0.33,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{TextColor3 = Color3.fromRGB(192, 192, 192)}):Play()
-							game:GetService("TweenService"):Create(v.uiTabButtonImage,TweenInfo.new(0.33,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{ImageColor3 = Color3.fromRGB(192, 192, 192)}):Play()
-						end
-					end
-					for i,v in pairs(lib.tabframes) do
-						if v ~= uiTab then
-							v.Visible = false
-						else
-							v.Visible = true
-						end
-					end
-				end
-			end
-		end)
-
-		uiTab.Name = "uiTab"
-		uiTab.Parent = uiBack
-		uiTab.Active = true
-		uiTab.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		uiTab.BackgroundTransparency = 1.000
-		uiTab.BorderColor3 = Color3.fromRGB(40, 26, 29)
-		uiTab.BorderSizePixel = 0
-		uiTab.Position = UDim2.new(0, 7, 0, 33)
-		uiTab.Size = UDim2.new(1, -13, 1, -93)
-		uiTab.CanvasSize = UDim2.new(0, 0, 0, 0)
-		uiTab.ScrollBarImageColor3 = lib.accent
-		uiTab.ScrollBarThickness = 4
-		uiTab.ClipsDescendants = false
-		if lib.totaltabs > 1 then
-			uiTab.Visible = false
-		else
-		end
-
-		table.insert(lib.tabframes, uiTab)
-
-		tab.createSection = function(title)
-			xs = xs + 1
-			local localxs = xs
-			local uiTabSection = Instance.new("Frame")
-			local uiTabSectionIn = Instance.new("Frame")
-			local uiTabSectionLabel = Instance.new("TextLabel")
-			local uiTabSectionHolder = Instance.new("Frame")
-			local UIListLayout = Instance.new("UIListLayout")
-			local things = {}
-
-			uiTabSection.Name = "uiTabSection"
-			uiTabSection.Parent = uiTab
-			uiTabSection.BackgroundColor3 = Color3.fromRGB(27, 22, 20)
-			uiTabSection.BorderSizePixel = 0
-			uiTabSection.Size = UDim2.new(0, 270, 0, 30)
-			local uiCorner = Instance.new("UICorner",uiTabSection); uiCorner.CornerRadius = UDim.new(0,7)
-			if xs % 2 == 0 then
-				if xl == 0 then
-					uiTabSection.Position = UDim2.new(1, -270, 0, xl)
-				else
-					uiTabSection.Position = UDim2.new(1, -270, 0, xl + 5)
-				end
-				xl = xl + 35
-			else
-				if xr == 0 then
-					uiTabSection.Position = UDim2.new(0, 0, 0, xr)
-				else
-					uiTabSection.Position = UDim2.new(0, 0, 0, xr + 5)
-				end
-				xr = xr + 35
-			end
-			if xl > 500 then
-				uiTab.CanvasSize = UDim2.new(0, 0, 5, 0)
-			elseif xr > 500 then
-				uiTab.CanvasSize = UDim2.new(0, 0, 5, 0)
-			end
-
-			uiTabSectionIn.Name = "uiTabSectionIn"
-			uiTabSectionIn.Parent = uiTabSection
-			uiTabSectionIn.BackgroundColor3 = Color3.fromRGB(43, 43, 43)
-			uiTabSectionIn.BorderSizePixel = 0
-			uiTabSectionIn.Position = UDim2.new(0, 1, 0, 1)
-			uiTabSectionIn.Size = UDim2.new(1, -2, 1, -2)
-			local uiCorner = Instance.new("UICorner",uiTabSectionIn); uiCorner.CornerRadius = UDim.new(0,7)
-
-			uiTabSectionLabel.Name = "uiTabSectionLabel"
-			uiTabSectionLabel.Parent = uiTabSectionIn
-			uiTabSectionLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-			uiTabSectionLabel.BackgroundTransparency = 1.000
-			uiTabSectionLabel.Position = UDim2.new(0, 6, 0, 3)
-			uiTabSectionLabel.Size = UDim2.new(1, -4, 0, 20)
-			uiTabSectionLabel.Font = Enum.Font.Arial
-			uiTabSectionLabel.Text = title
-			uiTabSectionLabel.TextColor3 = Color3.fromRGB(218, 218, 218)
-			uiTabSectionLabel.TextSize = 14.000
-			uiTabSectionLabel.TextStrokeColor3 = Color3.fromRGB(14, 14, 14)
-			uiTabSectionLabel.TextStrokeTransparency = 0.350
-			uiTabSectionLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-			uiTabSectionHolder.Name = "uiTabSectionHolder"
-			uiTabSectionHolder.Parent = uiTabSectionIn
-			uiTabSectionHolder.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-			uiTabSectionHolder.BackgroundTransparency = 1.000
-			uiTabSectionHolder.Position = UDim2.new(0, 11, 0, 25)
-			uiTabSectionHolder.Size = UDim2.new(1, -24, 1, -33)
-
-			UIListLayout.Parent = uiTabSectionHolder
-			UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-
-			things.createToggle = function(title, default, flag, callback)
-				if localxs % 2 == 0 then
-					xl = xl + 20
-				else
-					xr = xr + 20
-				end; uiTabSection.Size = UDim2.new(uiTabSection.Size.X.Scale, uiTabSection.Size.X.Offset, uiTabSection.Size.Y.Scale, uiTabSection.Size.Y.Offset + 20)
-				local uiSectionButton = Instance.new("Frame")
-				local uiButtonOutline = Instance.new("Frame")
-				local uiButton = Instance.new("Frame")
-				local uiButtonLabel = Instance.new("TextLabel")
-                local togglelib = {}
-				lib.flags[flag] = default or false
-				
-
-				uiSectionButton.Name = "uiSectionButton"
-				uiSectionButton.Parent = uiTabSectionHolder
-				uiSectionButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				uiSectionButton.BackgroundTransparency = 1.000
-				uiSectionButton.Size = UDim2.new(1, 0, 0, 20)
-
-				uiButtonOutline.Name = "uiButtonOutline"
-				uiButtonOutline.Parent = uiSectionButton
-				uiButtonOutline.BackgroundColor3 = Color3.fromRGB(53, 53, 53)
-				uiButtonOutline.Position = UDim2.new(0, 6, 0.5, -7)
-				uiButtonOutline.Size = UDim2.new(0, 14, 0, 14)
-				local uiCorner = Instance.new("UICorner",uiButtonOutline); uiCorner.CornerRadius = UDim.new(0,3)
-
-				uiButton.Name = "uiButton"
-				uiButton.Parent = uiButtonOutline
-				local uiCorner = Instance.new("UICorner",uiButton); uiCorner.CornerRadius = UDim.new(0,3)
-				if default then
-					uiButton.BackgroundColor3 = lib.accent
-				else
-					uiButton.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-				end
-				uiButton.Position = UDim2.new(0, 1, 0, 1)
-				uiButton.Size = UDim2.new(0, 12, 0, 12)
-				table.insert(lib.accentItems, uiButton)
-
-				uiButtonLabel.Name = "uiButtonLabel"
-				uiButtonLabel.Parent = uiSectionButton
-				uiButtonLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				uiButtonLabel.BackgroundTransparency = 1.000
-				uiButtonLabel.Position = UDim2.new(0, 26, 0, 0)
-				uiButtonLabel.Size = UDim2.new(0, 200, 0, 19)
-				uiButtonLabel.Font = Enum.Font.Arial
-				uiButtonLabel.Text = title
-				uiButtonLabel.TextColor3 = Color3.fromRGB(208, 208, 208)
-				uiButtonLabel.TextSize = 14.000
-				uiButtonLabel.TextStrokeTransparency = 0.350
-				uiButtonLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-				uiSectionButton.InputBegan:Connect(function(input)
-					if input.UserInputType == Enum.UserInputType.MouseButton1 and not lib.inDropdown and not lib.inColorPicker then
-						lib.flags[flag] = not lib.flags[flag]
-						if lib.flags[flag] then
-							game:GetService("TweenService"):Create(uiButton,TweenInfo.new(0.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundColor3 = lib.accent}):Play()
-						else
-							game:GetService("TweenService"):Create(uiButton,TweenInfo.new(0.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundColor3 = Color3.fromRGB(35, 35, 35)}):Play()
-						end
-						pcall(callback, lib.flags[flag])
-					end
-				end)
-
-                togglelib.set = function(bool)
-                    lib.flags[flag] = bool
-                    if lib.flags[flag] then
-                        game:GetService("TweenService"):Create(uiButton,TweenInfo.new(0.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundColor3 = lib.accent}):Play()
-                    else
-                        game:GetService("TweenService"):Create(uiButton,TweenInfo.new(0.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundColor3 = Color3.fromRGB(35, 35, 35)}):Play()
+-----------------------------------------------------------------
+do
+    Utility.AddInstance = function(NewInstance, Properties)
+        local NewInstance = Instance.new(NewInstance)
+        --
+        for Index, Value in pairs(Properties) do
+            NewInstance[Index] = Value
+        end
+        --
+        return NewInstance
+    end
+    --
+    Utility.CLCheck = function()
+        repeat task.wait() until iswindowactive()
+        do
+            local InputHandle = Utility.AddInstance("TextBox", {
+                Position = UDim2.new(0, 0, 0, 0)
+            })
+            --
+            InputHandle:CaptureFocus() task.wait() keypress(0x4E) task.wait() keyrelease(0x4E) InputHandle:ReleaseFocus()
+            Library.Input.Caplock = InputHandle.Text == "N" and true or false
+            InputHandle:Destroy()
+        end
+    end
+    --
+    Utility.Loop = function(Delay, Call)
+        local Callback = typeof(Call) == "function" and Call or function() end
+        --
+        task.spawn(function()
+            while task.wait(Delay) do
+                local Success, Error = pcall(function()
+                    Callback()
+                end)
+                --
+                if Error then 
+                    return 
+                end
+            end
+        end)
+    end
+    --
+    Utility.RemoveDrawing = function(Instance, Location)
+        local SpecificDrawing = 0
+        --
+        Location = Location or Library.Drawings
+        --
+        for Index, Value in pairs(Location) do 
+            if Value[1] == Instance then
+                if Value[1] then
+                    Value[1]:Remove()
+                end
+                if Value[2] then
+                    Value[2] = nil
+                end
+                SpecificDrawing = Index
+            end
+        end
+        --
+        table.remove(Location, table.find(Location, Location[SpecificDrawing]))
+    end
+    --
+    Utility.AddConnection = function(Type, Callback)
+        local Connection = Type:Connect(Callback)
+        --
+        Library.Connections[#Library.Connections + 1] = Connection
+        --
+        return Connection
+    end
+    --
+    Utility.Round = function(Num, Float)
+        local Bracket = 1 / Float;
+        return math.floor(Num * Bracket) / Bracket;
+    end
+    --
+    Utility.AddDrawing = function(Instance, Properties, Location)
+        local InstanceType = Instance
+        local Instance = Drawing.new(Instance)
+        --
+        for Index, Value in pairs(Properties) do
+            Instance[Index] = Value
+            if InstanceType == "Text" then
+                if Index == "Font" then
+                    Instance.Font = Library.Theme.Font
+                end
+                if Index == "Size" then
+                    Instance.Size = Library.Theme.TextSize
+                end
+            end
+        end
+        --
+        if Properties.ZIndex ~= nil then
+            Instance.ZIndex = Properties.ZIndex + 20
+        else
+            Instance.ZIndex = 20
+        end
+        --
+        Location = Location or Library.Drawings
+        if InstanceType == "Image" then
+            Location[#Location + 1] = {Instance, true}
+        else
+            Location[#Location + 1] = {Instance}
+        end
+        --
+        return Instance
+    end
+    --
+    Utility.OnMouse = function(Instance)
+        local Mouse = UserInput:GetMouseLocation()
+        if Instance.Visible and (Mouse.X > Instance.Position.X) and (Mouse.X < Instance.Position.X + Instance.Size.X) and (Mouse.Y > Instance.Position.Y) and (Mouse.Y < Instance.Position.Y + Instance.Size.Y) then
+            if Library.WindowVisible then
+                return true
+            end
+        end
+    end
+    --
+    Utility.Rounding = function(Num, DecimalPlaces)
+        return tonumber(string.format("%." .. (DecimalPlaces or 0) .. "f", Num))
+    end
+    --
+    Utility.AddDrag = function(Sensor, List)
+        local DragUtility = {
+            MouseStart = Vector2.new(), MouseEnd = Vector2.new(), Dragging = false
+        }
+        --
+        Utility.AddConnection(UserInput.InputBegan, function(Input)
+            if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+                if Utility.OnMouse(Sensor) then
+                    DragUtility.Dragging = true
+                end
+            end
+        end)
+        --
+        Utility.AddConnection(UserInput.InputEnded, function(Input)
+            if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+                DragUtility.Dragging = false
+            end
+        end)
+        --
+        Utility.AddConnection(RunService.RenderStepped, function()
+            DragUtility.MouseStart = UserInput:GetMouseLocation()
+            --
+            for Index, Value in pairs(List) do
+                if Index ~= nil and Value ~= nil then
+                    if DragUtility.Dragging then
+                        Value[1].Position = Vector2.new(
+                            Value[1].Position.X + (DragUtility.MouseStart.X - DragUtility.MouseEnd.X), 
+                            Value[1].Position.Y + (DragUtility.MouseStart.Y - DragUtility.MouseEnd.Y)
+                        )
                     end
-                    pcall(callback, lib.flags[flag])
+                end
+            end
+            --
+            DragUtility.MouseEnd = UserInput:GetMouseLocation()
+        end)
+    end
+    --
+    Utility.AddCursor = function(Instance)
+        local CursorOutline = Utility.AddDrawing("Triangle", {
+            Color = Library.Theme.Accent[1],
+            Thickness = 1,
+            Filled = false,
+            ZIndex = 5
+        }, Library.Ignores)
+        --
+        local Cursor = Utility.AddDrawing("Triangle", {
+            Color = Library.Theme.Accent[1],
+            Thickness = 3,
+            Filled = true,
+            Transparency = 1,
+            ZIndex = 5
+        }, Library.Ignores)
+        --
+        Utility.AddConnection(Library.Communication.Event, function(Type, Color)
+            if Type == "Accent" then
+                Cursor.Color = Color
+                CursorOutline.Color = Color
+            end
+        end)
+        --
+        Utility.AddConnection(RunService.RenderStepped, function()
+            local Mouse = UserInput:GetMouseLocation()
+            --
+            if Library.WindowVisible then
+                CursorOutline.Visible = true
+                CursorOutline.PointA = Vector2.new(Mouse.X, Mouse.Y)
+                CursorOutline.PointB = Vector2.new(Mouse.X + 15, Mouse.Y + 5)
+                CursorOutline.PointC = Vector2.new(Mouse.X + 5, Mouse.Y + 15)
+
+                Cursor.Visible = true
+                Cursor.PointA = Vector2.new(Mouse.X, Mouse.Y)
+                Cursor.PointB = Vector2.new(Mouse.X + 15, Mouse.Y + 5)
+                Cursor.PointC = Vector2.new(Mouse.X + 5, Mouse.Y + 15)
+            else
+                CursorOutline.Visible = false
+                Cursor.Visible = false
+            end
+        end)
+    end
+    --
+    Utility.MiddlePos = function(Instance)
+        return Vector2.new(
+            (Camera.ViewportSize.X / 2) - (Instance.Size.X / 2), 
+            (Camera.ViewportSize.Y / 2) - (Instance.Size.Y / 2)
+        )
+    end
+    --
+    Utility.SaveConfig = function(Config)
+        writefile(
+            "Abyss/Configs/" .. tostring(game.PlaceId) .. "/" .. Config .. ".json", 
+            HttpService:JSONEncode(UISettings.Flags)
+        )
+    end
+    --
+    Utility.DeleteConfig = function(Config)
+        delfile(
+            "Abyss/Configs/" .. tostring(game.PlaceId) .. "/" .. Config .. ".json"
+        )
+    end
+    --
+    Utility.LoadConfig = function(Config)
+        local Config = HttpService:JSONDecode(readfile("Abyss/Configs/" .. tostring(game.PlaceId) .. "/" .. Config .. ".json"))
+        --
+        Library.Flags = LoadedConfig
+        --
+        for Index, Value in pairs(Library.Flags) do
+            if Library.Items[Index].TypeOf == "Keybind" then
+                Library.Items[Index]:Set(Value[1], Value[2], Value[3], true)
+            elseif Library.Items[Index].TypeOf == "Colorpicker" then
+                Library.Items[Index]:SetHue(Value[1])
+                Library.Items[Index]:SetSaturationX(Value[2])
+                Library.Items[Index]:SetSaturationY(Value[3])
+            else
+                Library.Items[Index]:Set(Value)
+            end
+        end
+        --
+        rconsoleinfo("Debug: Loaded a config! 0 error.")
+    end
+    --
+    Utility.AddFolder = function(GetFolder)
+        local Folder = isfolder(GetFolder)
+        --
+        if Folder then
+            return
+        else
+            makefolder(GetFolder)
+            return true
+        end
+    end
+    --
+    Utility.AddImage = function(Image, Url, UI)
+        local ImageFile = nil
+        --
+        if isfile(Image) then
+            ImageFile = readfile(Image)
+        else
+            ImageFile = game:HttpGet(Url)
+            writefile(Image, ImageFile)
+        end
+        --
+        return ImageFile
+    end
+end
+--
+do
+    function Library.CreateLoader(Title, WindowSize)
+        local Window = {
+            Max = 2, Current = 0
+        }
+        --
+        Library.Theme.Logo = Utility.AddImage("Abyss/Assets/UI/Logo2.png", "https://i.imgur.com/HI4UTmZ.png")
+        --
+        local WindowOutline = Utility.AddDrawing("Square", {
+            Size = WindowSize,
+            Thickness = 0,
+            Color = Library.Theme.Outline,
+            Visible = true,
+            Filled = true
+        })
+        --
+        WindowOutline.Position = Utility.MiddlePos(WindowOutline)
+        --
+        local WindowOutlineBorder = Utility.AddDrawing("Square", {
+            Size = Vector2.new(WindowOutline.Size.X - 2, WindowOutline.Size.Y - 2),
+            Position = Vector2.new(WindowOutline.Position.X + 1, WindowOutline.Position.Y + 1),
+            Thickness = 0,
+            Color = Library.Theme.Accent[1],
+            Visible = true,
+            Filled = true
+        })
+        --
+        local WindowFrame = Utility.AddDrawing("Square", {
+            Size = Vector2.new(WindowOutlineBorder.Size.X - 2, WindowOutlineBorder.Size.Y - 2),
+            Position = Vector2.new(WindowOutlineBorder.Position.X + 1, WindowOutlineBorder.Position.Y + 1),
+            Thickness = 0,
+            Transparency = 1,
+            Color = Library.Theme.DarkContrast,
+            Visible = true,
+            Filled = true
+        })
+        --
+        local WindowTopline = Utility.AddDrawing("Square", {
+            Size = Vector2.new(WindowOutline.Size.X - 2, 2),
+            Position = Vector2.new(WindowOutlineBorder.Position.X, WindowOutlineBorder.Position.Y),
+            Thickness = 0,
+            Color = Library.Theme.Accent[1],
+            Visible = false,
+            Filled = true
+        })
+        --
+        local WindowImage = Utility.AddDrawing("Image", {
+            Size = WindowFrame.Size,
+            Position = WindowFrame.Position,
+            Transparency = 1, 
+            Visible = true,
+            Data = Library.Theme.Gradient
+        })
+        --
+        local WindowTitle = Utility.AddDrawing("Text", {
+            Font = Library.Theme.Font,
+            Size = Library.Theme.TextSize,
+            Color = Library.Theme.Text,
+            Text = Title,
+            Position = Vector2.new(WindowFrame.Position.X + (WindowFrame.Size.X / 2), WindowOutlineBorder.Position.Y + 8),
+            Visible = true,
+            Center = true,
+            Outline = false
+        })
+        --
+        local WindowText = Utility.AddDrawing("Text", {
+            Font = Library.Theme.Font,
+            Size = Library.Theme.TextSize,
+            Color = Library.Theme.Text,
+            Visible = true,
+            Center = true,
+            Outline = false
+        })
+        --
+        local SliderInline = Utility.AddDrawing("Square", {
+            Size = Vector2.new(205, 15),
+            Color = Library.Theme.Inline,
+            Position = Vector2.new(WindowFrame.Position.X + (WindowFrame.Size.X / 2), WindowOutlineBorder.Position.Y + 8),
+            Transparency = 0.75,
+            Thickness = 0,
+            Visible = true,
+            Filled = true
+        })
+        --
+        local SliderOutline = Utility.AddDrawing("Square", {
+            Size = Vector2.new(SliderInline.Size.X - 2, SliderInline.Size.Y - 2),
+            Color = Library.Theme.Outline,
+            Transparency = 0.5,
+            Thickness = 0,
+            Visible = true,
+            Filled = true
+        })
+        --
+        local SliderFrame = Utility.AddDrawing("Square", {
+            Size = Vector2.new(((SliderInline.Size.X - 2) / (Window.Max / math.clamp(Window.Current, 0, Window.Max))), SliderInline.Size.Y - 2),
+            Color = Library.Theme.Accent[1],
+            Transparency = 0.75,
+            Thickness = 0,
+            Visible = true,
+            Filled = true
+        })
+        --
+        local SliderFrameShader = Utility.AddDrawing("Image", {
+            Size = Vector2.new(SliderInline.Size.X - 2, SliderInline.Size.Y - 2),
+            Transparency = 1, 
+            Visible = true,
+            Data = Library.Theme.Gradient
+        })
+        --
+        local MiddleIcon = Utility.AddDrawing("Image", {
+            Size = Vector2.new(175, 175),
+            Rounding = 5,
+            Transparency = 1, 
+            Visible = true,
+            Data = Library.Theme.Logo
+        })
+        --
+        MiddleIcon.Position = Vector2.new(WindowOutline.Position.X + (WindowOutline.Size.X / 2) - (MiddleIcon.Size.X / 2), WindowOutline.Position.Y + (WindowOutline.Size.Y / 2) - (MiddleIcon.Size.Y / 2) - 15)
+        --
+        Window.SetText = function(Val, Txt)
+            SliderFrame.Size = Vector2.new(((SliderInline.Size.X - 2) / (Window.Max / math.clamp(Val, 0, Window.Max))), SliderInline.Size.Y - 2)
+            WindowText.Text = Txt
+        end
+        --
+        SliderInline.Position = Vector2.new(WindowOutline.Position.X + (WindowOutline.Size.X / 2) - (SliderOutline.Size.X / 2), (WindowOutline.Position.Y + WindowOutline.Size.Y) - 30)
+        SliderOutline.Position = Vector2.new(SliderInline.Position.X + 1, SliderInline.Position.Y + 1)
+        SliderFrame.Position = Vector2.new(SliderInline.Position.X + 1, SliderInline.Position.Y + 1)
+        SliderFrameShader.Position = Vector2.new(SliderInline.Position.X + 1, SliderInline.Position.Y + 1)
+        WindowText.Position = Vector2.new(WindowFrame.Position.X + (WindowFrame.Size.X / 2), SliderInline.Position.Y - 16)
+        --
+        Window.SetText(0, "UI Initialization [ Downloading ]")
+        --
+        Utility.AddFolder("Abyss")
+        Utility.AddFolder("Abyss/Caches")
+        Utility.AddFolder("Abyss/Assets")
+        Utility.AddFolder("Abyss/Assets/UI")
+        Utility.AddFolder("Abyss/Configs")
+        Utility.AddFolder("Abyss/Scripts")
+        --
+        Library.Theme.Gradient = Utility.AddImage("Abyss/Assets/UI/Gradient.png", "https://raw.githubusercontent.com/mvonwalk/Exterium/main/Gradient.png")
+        -- Library.Theme.SecondIcon = Utility.AddImage("Abyss/Assets/UI/Gradient.png", "https://raw.githubusercontent.com/mvonwalk/Exterium/main/Gradient.png")
+        Library.Theme.Hue = Utility.AddImage("Abyss/Assets/UI/Hue.png", "https://raw.githubusercontent.com/mvonwalk/Exterium/main/HuePicker.png")
+        Library.Theme.Saturation = Utility.AddImage("Abyss/Assets/UI/Saturation.png", "https://raw.githubusercontent.com/mvonwalk/Exterium/main/SaturationPicker.png")
+        Library.Theme.SaturationCursor = Utility.AddImage("Abyss/Assets/UI/HueCursor.png", "https://raw.githubusercontent.com/mvonwalk/splix-assets/main/Images-cursor.png")
+        --
+        Library.Theme.Astolfo = Utility.AddImage("Abyss/Assets/UI/Astolfo.png", "https://i.imgur.com/T20cWY9.png")
+        Library.Theme.Aiko = Utility.AddImage("Abyss/Assets/UI/Aiko.png", "https://i.imgur.com/1gRIdko.png")
+        Library.Theme.Rem = Utility.AddImage("Abyss/Assets/UI/Rem.png", "https://i.imgur.com/ykbRkhJ.png")
+        Library.Theme.Violet = Utility.AddImage("Abyss/Assets/UI/Violet.png", "https://i.imgur.com/7B56w4a.png")
+        Library.Theme.Asuka = Utility.AddImage("Abyss/Assets/UI/Asuka.png", "https://i.imgur.com/3hwztNM.png")
+        --
+        Window.SetText(1, "Checking Assets")
+        --
+        Window.SetText(1, "Checking Input")
+        Utility.CLCheck(Window)
+        --
+        Window.SetText(2, "Finished")
+        --
+        Utility.RemoveDrawing(WindowOutline)
+        Utility.RemoveDrawing(WindowOutlineBorder)
+        Utility.RemoveDrawing(WindowTopline)
+        Utility.RemoveDrawing(WindowFrame)
+        Utility.RemoveDrawing(WindowTitle)
+        Utility.RemoveDrawing(WindowText)
+        Utility.RemoveDrawing(SliderOutline)
+        Utility.RemoveDrawing(SliderInline)
+        Utility.RemoveDrawing(SliderFrame)
+        Utility.RemoveDrawing(SliderFrameShader)
+        Utility.RemoveDrawing(MiddleIcon)
+        Utility.RemoveDrawing(WindowImage)
+        --
+        UserInput.MouseIconEnabled = false
+        --
+        return Window
+    end
+end
+--
+do
+    --
+    function Library:ChangeVisible(State)
+        Library.WindowVisible = State
+        UserInput.MouseIconEnabled = not Library.WindowVisible
+        for Idx, Val in pairs(Library.Drawings) do
+            if Val[2] then
+                Val[1].Transparency = Library.WindowVisible and 1 or 0
+            else
+                if Val[1].Color ~= Library.Theme.Hitbox then
+                    Val[1].Transparency = Library.WindowVisible and 1 or 0
+                end
+            end
+        end
+    end
+    --
+    function Library:UpdateTheme(Config)
+        if Config.Accent ~= nil then
+            Library.Theme.Accent[1] = Config.Accent
+            Library.Communication:Fire("Accent", Config.Accent)
+        end
+        if Config.Outline ~= nil then
+            Library.Theme.Outline = Config.Outline
+            Library.Communication:Fire("Outline", Config.Outline)
+        end
+        if Config.Inline ~= nil then
+            Library.Theme.Inline = Config.Inline
+            Library.Communication:Fire("Inline", Config.Inline)
+        end
+        if Config.LightContrast ~= nil then
+            Library.Theme.LightContrast = Config.LightContrast
+            Library.Communication:Fire("LightContrast", Config.LightContrast)
+        end
+        if Config.DarkContrast ~= nil then
+            Library.Theme.DarkContrast = Config.DarkContrast
+            Library.Communication:Fire("DarkContrast", Config.DarkContrast)
+        end
+    end
+    --
+    function Library.SelfDestruct()
+        --
+        UserInput.MouseIconEnabled = true
+        --
+        for Index, Value in pairs(Library.Connections) do
+            Value:Disconnect()
+        end
+        --
+        for Index, Value in pairs(Library.Drawings) do
+            if Value[1] then    
+                Value[1]:Remove()
+            end
+        end
+        --
+        for Index, Value in pairs(Library.Watermark) do
+            if Value[1] then
+                Value[1]:Remove()
+            end
+        end
+        --
+        for Index, Value in pairs(Library.Keybind) do
+            if Value[1] then
+                Value[1]:Remove()
+            end
+        end
+        --
+        for Index, Value in pairs(Library.Ignores) do
+            if Value[1] then
+                Value[1]:Remove()
+            end
+        end
+        --
+        Library.Drawings = {}
+        Library.Watermark = {}
+        Library.Keybind = {}
+        Library.Ignores = {}
+        --
+    end
+    --
+    function Library.Window(Title, Size)
+        local Window = {
+            Notification = 0,
+            Tabs = {},
+            LastTab = nil,
+            SelectedTab = nil,
+            BindList = ""
+        }
+        --
+        local Blur = Utility.AddDrawing("Image", {
+            Position = Vector2.new(0, 0),
+            Size = Vector2.new(1920, 1080),
+            Transparency = 0,
+            Visible = true,
+        }, Library.Ignores)
+        --
+        do
+            local WindowOutline = Utility.AddDrawing("Square", {
+                Size = Vector2.new(120, 20),
+                Thickness = 0,  
+                Color = Library.Theme.Outline,
+                Visible = true,
+                Filled = true
+            }, Library.Keybind)
+            --
+            WindowOutline.Position = Vector2.new(10, (Camera.ViewportSize.Y / 2) - (WindowOutline.Size.Y / 2))
+            --
+            local WindowOutlineBorder = Utility.AddDrawing("Square", {
+                Size = Vector2.new(WindowOutline.Size.X - 2, WindowOutline.Size.Y - 2),
+                Position = Vector2.new(WindowOutline.Position.X + 1, WindowOutline.Position.Y + 1),
+                Thickness = 0,
+                Color = Library.Theme.Accent[1],
+                Visible = false,
+                Filled = true
+            }, Library.Keybind)
+            --
+            local WindowFrame = Utility.AddDrawing("Square", {
+                Size = Vector2.new(WindowOutlineBorder.Size.X - 2, WindowOutlineBorder.Size.Y - 2),
+                Position = Vector2.new(WindowOutlineBorder.Position.X + 1, WindowOutlineBorder.Position.Y + 1),
+                Thickness = 0,
+                Transparency = 1,
+                Color = Library.Theme.DarkContrast,
+                Visible = true,
+                Filled = true
+            }, Library.Keybind)
+            --
+            local WindowTopline = Utility.AddDrawing("Square", {
+                Size = Vector2.new(WindowOutlineBorder.Size.X, 1),
+                Position = Vector2.new(WindowOutlineBorder.Position.X, WindowOutlineBorder.Position.Y),
+                Thickness = 0,
+                Color = Library.Theme.Accent[1],
+                Visible = true,
+                Filled = true
+            }, Library.Keybind)
+            --
+            local WindowImage = Utility.AddDrawing("Image", {
+                Size = WindowFrame.Size,
+                Position = WindowFrame.Position,
+                Transparency = 1, 
+                Visible = true,
+                Data = Library.Theme.Gradient
+            }, Library.Keybind)
+            --
+            local WindowText = Utility.AddDrawing("Text", {
+                Font = Library.Theme.Font,
+                Size = Library.Theme.TextSize,
+                Color = Library.Theme.Text,
+                Text = "Keybinds",
+                Position = Vector2.new(WindowOutlineBorder.Position.X + (WindowOutlineBorder.Size.X / 2), WindowOutlineBorder.Position.Y + 2),
+                Visible = true,
+                Center = true,
+                Outline = false
+            }, Library.Keybind)
+            --
+            local CurrentBinds = Utility.AddDrawing("Text", {
+                Font = Library.Theme.Font,
+                Size = Library.Theme.TextSize,
+                Color = Library.Theme.Text,
+                Text = "",
+                Position = Vector2.new(WindowOutlineBorder.Position.X + 3, WindowOutlineBorder.Position.Y + 8),
+                Visible = true,
+                Center = false,
+                Outline = false
+            }, Library.Keybind)
+            --
+            Utility.AddConnection(RunService.RenderStepped, function(Type, Color)
+                CurrentBinds.Text = Window.BindList
+
+                local CalcuationSize = CurrentBinds.Text ~= "" and Vector2.new(CurrentBinds.TextBounds.X >= 120 and CurrentBinds.TextBounds.X + 6 or 120, 20 + CurrentBinds.TextBounds.Y - 6) or Vector2.new(120, 20)
+                WindowOutline.Size = CalcuationSize
+                
+                WindowOutlineBorder.Size = Vector2.new(WindowOutline.Size.X - 2, WindowOutline.Size.Y - 2)
+                WindowOutlineBorder.Position = Vector2.new(WindowOutline.Position.X + 1, WindowOutline.Position.Y + 1)
+
+                WindowTopline.Size = Vector2.new(WindowOutlineBorder.Size.X, 1)
+                WindowTopline.Position = Vector2.new(WindowOutlineBorder.Position.X, WindowOutlineBorder.Position.Y)
+
+                WindowImage.Size = WindowFrame.Size
+                WindowImage.Position = WindowFrame.Position
+
+                WindowText.Position = Vector2.new(WindowOutlineBorder.Position.X + (WindowOutlineBorder.Size.X / 2), WindowOutlineBorder.Position.Y + 2)
+            end)
+            --
+            Utility.AddDrag(WindowOutline, Library.Keybind)
+            --
+            Utility.AddConnection(Library.Communication.Event, function(Type, Color)
+                if Type == "Accent" then
+                    WindowOutlineBorder.Color = Color
+                    WindowTopline.Color = Color
+                elseif Type == "Outline" then
+                    WindowOutline.Color = Color
+                elseif Type == "DarkContrast" then
+                    WindowFrame.Color = Color
+                elseif Type == "Text" then
+                    WindowText.Color = Color
+                end
+            end)
+        end
+        --
+        local Anime = Utility.AddDrawing("Image", {
+            Transparency = 0.5, 
+            Visible = false
+        }, Library.Ignores)
+        --
+        local WindowOutline = Utility.AddDrawing("Square", {
+            Size = Size,
+            Thickness = 0,
+            Color = Library.Theme.Outline,
+            Visible = true,
+            Filled = true
+        })
+        --
+        WindowOutline.Position = Utility.MiddlePos(WindowOutline)
+        --
+        local WindowOutlineBorder = Utility.AddDrawing("Square", {
+            Size = Vector2.new(WindowOutline.Size.X - 2, WindowOutline.Size.Y - 2),
+            Position = Vector2.new(WindowOutline.Position.X + 1, WindowOutline.Position.Y + 1),
+            Thickness = 0,
+            Color = Library.Theme.Accent[1],
+            Visible = true,
+            Filled = true
+        })
+        --
+        local WindowFrame = Utility.AddDrawing("Square", {
+            Size = Vector2.new(WindowOutlineBorder.Size.X - 2, WindowOutlineBorder.Size.Y - 2),
+            Position = Vector2.new(WindowOutlineBorder.Position.X + 1, WindowOutlineBorder.Position.Y + 1),
+            Thickness = 0,
+            Transparency = 1,
+            Color = Library.Theme.DarkContrast,
+            Visible = true,
+            Filled = true
+        })
+        --
+        local WatermarkIcon = Utility.AddDrawing("Image", {
+            Size = Vector2.new(70, 70),
+            Position = Vector2.new(WindowFrame.Position.X + (WindowFrame.Size.X / 2) - 35, WindowFrame.Position.Y - 4),
+            Transparency = 1,
+            ZIndex = 3,
+            Visible = false,
+            Data = Library.Theme.Logo
+        })
+        --
+        Utility.AddCursor(WindowFrame)
+        --
+        local WindowHeader = Utility.AddDrawing("Square", {
+            Size = Vector2.new(WindowOutlineBorder.Size.X - 2, 70),
+            Position = Vector2.new(WindowOutlineBorder.Position.X + 1, WindowOutlineBorder.Position.Y + 1),
+            Thickness = 0,
+            Transparency = 0,
+            Color = Library.Theme.Hitbox,
+            Visible = true,
+            Filled = true
+        })
+        --
+        Utility.AddDrag(WindowHeader, Library.Drawings)
+        --
+        local WindowTopline = Utility.AddDrawing("Square", {
+            Size = Vector2.new(WindowOutlineBorder.Size.X, 1),
+            Position = Vector2.new(WindowOutlineBorder.Position.X, WindowOutlineBorder.Position.Y),
+            Thickness = 0,
+            Color = Library.Theme.Accent[1],
+            Visible = false,
+            Filled = true
+        })
+        --
+        local WindowImage = Utility.AddDrawing("Image", {
+            Size = WindowFrame.Size,
+            Position = WindowFrame.Position,
+            Transparency = 1, 
+            Visible = true,
+            Data = Library.Theme.Gradient
+        })
+        --
+        local WindowTitle = Utility.AddDrawing("Text", {
+            Font = Library.Theme.Font,
+            Size = Library.Theme.TextSize,
+            Color = Library.Theme.Text,
+            Text = Title,
+            Position = Vector2.new(WindowOutlineBorder.Position.X + 8, WindowOutlineBorder.Position.Y + 6),
+            Visible = true,
+            Center = false,
+            Outline = false
+        })
+        --
+        local SecondBorderInline = Utility.AddDrawing("Square", {
+            Size = Vector2.new(Size.X - 17, Size.Y - 50),
+            Position = Vector2.new(WindowOutlineBorder.Position.X + 8, WindowOutlineBorder.Position.Y + 42),
+            Thickness = 0,
+            Color = Library.Theme.Inline,
+            Visible = true,
+            Filled = true
+        })
+        --
+        local SecondBorderOutline = Utility.AddDrawing("Square", {
+            Size = Vector2.new(SecondBorderInline.Size.X - 2, SecondBorderInline.Size.Y - 2),
+            Position = Vector2.new(SecondBorderInline.Position.X + 1, SecondBorderInline.Position.Y + 1),
+            Thickness = 0,
+            Color = Library.Theme.LightContrast,
+            Visible = true,
+            Filled = true
+        })
+        --
+        local TabLine = Utility.AddDrawing("Square", {
+            Thickness = 0,
+            Color = Library.Theme.Accent[1], --Library.Theme.Outline,
+            Visible = true,
+            Filled = true,
+            ZIndex = 2
+        })
+        --
+        local DisableLine = Utility.AddDrawing("Square", {
+            Thickness = 0,
+            Color = Library.Theme.LightContrast, --Library.Theme.Outline,
+            Visible = true,
+            Filled = true,
+            ZIndex = 3
+        })
+        --
+        Utility.AddConnection(Library.Communication.Event, function(Type, Color)
+            if Type == "Accent" then
+                WindowOutlineBorder.Color = Color
+                WindowTopline.Color = Color
+                TabLine.Color = Color
+            elseif Type == "Outline" then
+                WindowOutline.Color = Color
+            elseif Type == "LightContrast" then
+                DisableLine.Color = Color
+                SecondBorderOutline.Color = Color
+            elseif Type == "DarkContrast" then
+                WindowFrame.Color = Color
+            elseif Type == "Text" then
+                WindowTitle.Color = Color
+            elseif Type == "Inline" then
+                SecondBorderInline.Color = Color
+            end
+        end)
+        --
+        Window["PageCover"] = SecondBorderInline
+        --
+        function Window.ChangeAnime(Name)
+            Anime.Data = (
+                Name == "Astolfo" and Library.Theme.Astolfo or
+                Name == "Aiko" and Library.Theme.Aiko or
+                Name == "Rem" and Library.Theme.Rem or
+                Name == "Violet" and Library.Theme.Violet or
+                Name == "Asuka" and Library.Theme.Asuka
+            )
+
+            Anime.Size = (
+                Name == "Astolfo" and Vector2.new(412, 605) or
+                Name == "Aiko" and Vector2.new(390, 630) or
+                Name == "Rem" and Vector2.new(390, 639) or
+                Name == "Violet" and Vector2.new(1029 / 3, 1497 / 3) or
+                Name == "Asuka" and Vector2.new(415, 601)
+            )
+
+            Anime.Position = Vector2.new(Camera.ViewportSize.X - 400, Camera.ViewportSize.Y - Anime.Size.Y)
+        end
+        --
+        function Window.ToggleAnime(State)
+            Anime.Visible = State
+        end
+        --
+        function Window.SendNotification(Type, Title, Duration)
+            local Notification, Removed = Window.Notification, false
+            --
+            local NotificationInline = Utility.AddDrawing("Square", {
+                Size = Vector2.new(0, 21),
+                Position = Vector2.new(0, (Window.Notification * 25) + 100),
+                Thickness = 0,
+                Color = Library.Theme.Inline,
+                Visible = true,
+                Filled = true
+            }, Library.Ignores)
+            --
+            local NotificationOutline = Utility.AddDrawing("Square", {
+                Size = Vector2.new(0, NotificationInline.Size.Y - 1),
+                Position = Vector2.new(NotificationInline.Position.X + 2, NotificationInline.Position.Y + 2),
+                Thickness = 0,
+                Color = Library.Theme.DarkContrast,
+                Visible = true,
+                Filled = true
+            }, Library.Ignores)
+            --
+            local NotificationOutlineBorder = Utility.AddDrawing("Square", {
+                Size = Vector2.new(NotificationOutline.Size.X - 2, NotificationOutline.Size.Y + 5),
+                Position = Vector2.new(NotificationOutline.Position.X + 1, NotificationOutline.Position.Y + 1),
+                Thickness = 0,
+                Color = Library.Theme.Accent[1],
+                Visible = false,
+                Filled = true
+            }, Library.Ignores)
+            --
+            local NotificationTopline = Utility.AddDrawing("Square", {
+                Size = Vector2.new(NotificationOutline.Size.X, 1),
+                Position = Vector2.new(NotificationOutline.Position.X, NotificationOutline.Position.Y),
+                Thickness = 0,
+                Color = Type == "Warning" and Library.Theme.Notification.Warning or Type == "Error" and Library.Theme.Notification.Error or Library.Theme.DarkContrast,
+                Visible = Type == "Warning" or Type == "Error",
+                Filled = true
+            }, Library.Ignores)
+            --
+            local NotificationLeftline = Utility.AddDrawing("Square", {
+                Size = Vector2.new(1, NotificationOutline.Size.Y),
+                Position = Vector2.new(NotificationOutline.Position.X, NotificationOutline.Position.Y),
+                Thickness = 0,
+                Color = Type == "Normal" and Library.Theme.Accent[1] or Library.Theme.DarkContrast,
+                Visible = Type == "Normal",
+                Filled = true
+            }, Library.Ignores)
+            --
+            local NotificationImage = Utility.AddDrawing("Image", {
+                Size = NotificationOutlineBorder.Size,
+                Position = NotificationOutlineBorder.Position,
+                Transparency = 1, 
+                Visible = true,
+                Data = Library.Theme.Gradient
+            }, Library.Ignores)
+            --
+            local NotificationText = Utility.AddDrawing("Text", {
+                Font = Library.Theme.Font,
+                Size = Library.Theme.TextSize,
+                Color = Library.Theme.Text,
+                Text = Title,
+                Position = Vector2.new(NotificationOutlineBorder.Position.X + 6, NotificationOutlineBorder.Position.Y + 3),
+                Visible = true,
+                Center = false,
+                Outline = false
+            }, Library.Ignores)
+            --
+            NotificationInline.Size = Vector2.new(NotificationText.TextBounds.X + 15, 21)
+            --
+            NotificationOutline.Size = Vector2.new(NotificationInline.Size.X - 1, NotificationInline.Size.Y - 1)
+            NotificationOutline.Position = Vector2.new(NotificationInline.Position.X + 2, NotificationInline.Position.Y + 2)
+            --
+            NotificationOutlineBorder.Size = Vector2.new(NotificationOutline.Size.X - 2, NotificationOutline.Size.Y - 2)
+            NotificationOutlineBorder.Position = Vector2.new(NotificationOutline.Position.X + 1, NotificationOutline.Position.Y + 1)
+            --
+            NotificationLeftline.Size = Vector2.new(2, NotificationOutline.Size.Y)
+            --
+            NotificationTopline.Size = Vector2.new(NotificationOutline.Size.X, 1)
+            --
+            NotificationImage.Size = NotificationOutline.Size
+            NotificationImage.Position = NotificationOutline.Position
+            --
+            task.spawn(function()
+                for Index = -100, 0, 2 do
+                    pcall(function()
+                        NotificationInline.Position = Vector2.new(Index, (Notification * 25) + 100)
+                        NotificationOutline.Position = Vector2.new(NotificationInline.Position.X + 2, NotificationInline.Position.Y + 2)
+                        NotificationOutlineBorder.Position = Vector2.new(NotificationOutline.Position.X + 2, NotificationOutline.Position.Y + 2)
+                        NotificationText.Position = Vector2.new(NotificationOutline.Position.X + 6, NotificationOutline.Position.Y + 3)
+                        NotificationTopline.Position = Vector2.new(NotificationOutline.Position.X, NotificationOutline.Position.Y)
+                        NotificationImage.Position = NotificationOutline.Position
+                        NotificationLeftline.Position = Vector2.new(NotificationOutline.Position.X, NotificationOutline.Position.Y)
+                    end)
+                    task.wait()
+                end
+            end)
+            --
+            Utility.AddConnection(Library.Communication.Event, function(Type)
+                if Type == "UpdateNotification" then
+                    Notification -= 1
+                    pcall(function()
+                        NotificationInline.Size = Vector2.new(Index, (Notification * 25) + 100)
+                        NotificationOutline.Position = Vector2.new(NotificationInline.Position.X + 2, NotificationInline.Position.Y + 2)
+                        NotificationText.Position = Vector2.new(NotificationOutline.Position.X + 6, NotificationOutline.Position.Y + 3)
+                        NotificationTopline.Position = Vector2.new(NotificationOutline.Position.X, NotificationOutline.Position.Y)
+                        NotificationImage.Position = NotificationOutline.Position
+                        NotificationLeftline.Position = Vector2.new(NotificationOutline.Position.X, NotificationOutline.Position.Y)
+                    end)
+                end
+            end)
+            --
+            Window.Notification += 1
+            --
+            task.spawn(function()
+                task.wait(Duration)
+                --
+                pcall(function()
+                    Utility.RemoveDrawing(NotificationInline, Library.Ignores)
+                    Utility.RemoveDrawing(NotificationLeftline, Library.Ignores)
+                    Utility.RemoveDrawing(NotificationOutline, Library.Ignores)
+                    Utility.RemoveDrawing(NotificationOutlineBorder, Library.Ignores)
+                    Utility.RemoveDrawing(NotificationText, Library.Ignores)
+                    Utility.RemoveDrawing(NotificationTopline, Library.Ignores)
+                    Utility.RemoveDrawing(NotificationImage, Library.Ignores)
+                end)
+                --
+                Library.Communication:Fire("UpdateNotification")
+                --
+                Window.Notification -= 1
+            end)
+        end
+        --
+        function Window:RefreshPages()
+            for Index, Value in pairs(Window.Tabs) do
+                Value:Resize(Index)
+            end
+        end
+        --
+        function Window:SwitchTab(Tab)
+            for Index, Value in pairs(self.Tabs) do
+                Value["TabTitle"].Color = Library.Theme.TextInactive
+                Value["TabOutline"].Color = Library.Theme.DarkContrast
+
+                for _, Render in pairs(Value["Render"]) do
+                    Render.Visible = false
+                end
+            end
+
+            Tab["TabOutline"].Color = Library.Theme.LightContrast
+            Tab["TabTitle"].Color = Library.Theme.Text
+
+            TabLine.Size = Vector2.new(Tab["TabOutline"].Size.X, 1)
+            TabLine.Position = Vector2.new(Tab["TabOutline"].Position.X, Tab["TabOutline"].Position.Y)
+            DisableLine.Size = Vector2.new(Tab["TabOutline"].Size.X, 1)
+            DisableLine.Position = Vector2.new(Tab["TabOutline"].Position.X, Tab["TabOutline"].Position.Y + Tab["TabOutline"].Size.Y)
+            Window.SelectedTab = Tab.CurrentTab
+
+            for _, Render in pairs(Tab["Render"]) do
+                Render.Visible = true
+            end
+        end
+        --
+        function Window:Tab(Title)
+            local Tab = {
+                Visible = {},
+                SectionAxis = {0, 0},
+                Sections = {},
+                Dropdowns = {
+                    ["Left"] = {}, 
+                    ["Right"] = {}
+                },
+                CurrentTab = #self.Tabs
+            }
+            --
+            local TabInline = Utility.AddDrawing("Square", {
+                Position = Vector2.new(SecondBorderInline.Position.X, SecondBorderOutline.Position.Y - 20),
+                Size = Vector2.new(0, 20),
+                Thickness = 0,
+                Color = Library.Theme.Inline,
+                Visible = true,
+                Filled = true
+            })
+            --
+            local TabOutline = Utility.AddDrawing("Square", {
+                Size = Vector2.new(TabInline.Size.X - 2, TabInline.Size.Y - 2),
+                Position = Vector2.new(TabInline.Position.X + 1, TabInline.Position.Y + 1),
+                Thickness = 0,
+                Color = Library.Theme.DarkContrast, --Library.Theme.Outline,
+                Visible = true,
+                Filled = true
+            })
+            --
+            local TabTitle = Utility.AddDrawing("Text", {
+                Text = Title,
+                Center = true,
+                Outline = false,
+                Font = Library.Theme.Font,
+                Size = Library.Theme.TextSize,
+                Color = Library.Theme.Text,
+                Visible = true,
+                ZIndex = 2
+            })
+            --
+            Utility.AddConnection(Library.Communication.Event, function(Type, Color)
+                if Type == "DarkContrast" and Window.SelectedTab == Tab then
+                    TabOutline.Color = Color
+                elseif Type == "LightContrast" and Window.SelectedTab ~= Tab then
+                    TabOutline.Color = Color
+                elseif Type == "Text" then
+                    TabTitle.Color = Color
+                elseif Type == "Inline" then
+                    TabInline.Color = Color
+                end
+            end)
+            --
+            function Tab:Install()
+                TabInline.Size = Vector2.new(TabTitle.TextBounds.X + 50, 20)
+                TabInline.Position = Vector2.new((Window.LastTab ~= nil and Window.LastTab.Position.X + Window.LastTab.Size.X + 5 or SecondBorderInline.Position.X), SecondBorderOutline.Position.Y - 20)
+
+                TabOutline.Size = Vector2.new(TabInline.Size.X - 2, TabInline.Size.Y - 2)
+                TabOutline.Position = Vector2.new(TabInline.Position.X + 1, TabInline.Position.Y + 1)
+
+                if Window.LastTab == nil then
+                    TabLine.Size = Vector2.new(TabOutline.Size.X, 1)
+                    TabLine.Position = Vector2.new(TabOutline.Position.X + 1, TabOutline.Position.Y)
+
+                    DisableLine.Size = Vector2.new(TabOutline.Size.X, 1)
+                    DisableLine.Position = Vector2.new(TabOutline.Position.X, TabOutline.Position.Y + TabOutline.Size.Y)
+
+                    Window.SelectedTab = Tab.CurrentTab
                 end
 
-                return togglelib
-			end
-
-			things.createSlider = function(title, default, min, max, suffix, flag, callback)
-				if localxs % 2 == 0 then
-					xl = xl + 36
-				else
-					xr = xr + 36
-				end; uiTabSection.Size = UDim2.new(uiTabSection.Size.X.Scale, uiTabSection.Size.X.Offset, uiTabSection.Size.Y.Scale, uiTabSection.Size.Y.Offset + 36)
-				local uiSectionSlider = Instance.new("Frame")
-				local uiSliderLabel = Instance.new("TextLabel")
-				local uiSliderOutline = Instance.new("Frame")
-				local uiSliderBack = Instance.new("Frame")
-				local uiSliderFill = Instance.new("Frame")
-				local slider = {}
-				lib.flags[flag] = default or min
-				
-
-				uiSectionSlider.Name = "uiSectionSlider"
-				uiSectionSlider.Parent = uiTabSectionHolder
-				uiSectionSlider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				uiSectionSlider.BackgroundTransparency = 1.000
-				uiSectionSlider.Size = UDim2.new(1, 0, 0, 36)
-
-				uiSliderLabel.Name = "uiSliderLabel"
-				uiSliderLabel.Parent = uiSectionSlider
-				uiSliderLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				uiSliderLabel.BackgroundTransparency = 1.000
-				uiSliderLabel.Position = UDim2.new(0, 6, 0, 0)
-				uiSliderLabel.Size = UDim2.new(0, 200, 0, 19)
-				uiSliderLabel.Font = Enum.Font.Arial
-				uiSliderLabel.Text = title.." ("..lib.flags[flag]..suffix..")"
-				uiSliderLabel.TextColor3 = Color3.fromRGB(208, 208, 208)
-				uiSliderLabel.TextSize = 14.000
-				uiSliderLabel.TextStrokeTransparency = 0.350
-				uiSliderLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-				uiSliderOutline.Name = "uiSliderOutline"
-				uiSliderOutline.Parent = uiSectionSlider
-				uiSliderOutline.BackgroundColor3 = Color3.fromRGB(53, 53, 53)
-				uiSliderOutline.Position = UDim2.new(0, 7, 0, 19)
-				uiSliderOutline.Size = UDim2.new(1, -10, 0, 12)
-				local uiCorner = Instance.new("UICorner",uiSliderOutline); uiCorner.CornerRadius = UDim.new(0,3)
-
-				uiSliderBack.Name = "uiSliderBack"
-				uiSliderBack.Parent = uiSliderOutline
-				uiSliderBack.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-				uiSliderBack.Position = UDim2.new(0, 1, 0, 1)
-				uiSliderBack.Size = UDim2.new(1, -2, 1, -2)
-				local uiCorner = Instance.new("UICorner",uiSliderBack); uiCorner.CornerRadius = UDim.new(0,3)
-
-				uiSliderFill.Name = "uiSliderFill"
-				uiSliderFill.Parent = uiSliderBack
-				uiSliderFill.BackgroundColor3 = lib.accent
-				uiSliderFill.Size = UDim2.new(1, 0, 1, 0)
-				uiSliderFill.BorderSizePixel = 0
-				table.insert(lib.accentItems, uiSliderFill)
-				local uiCorner = Instance.new("UICorner",uiSliderFill); uiCorner.CornerRadius = UDim.new(0,3)
-
-				local sliding
-				local inContact
-
-				local function round(num, bracket)
-					bracket = bracket or 1
-					local a = math.floor(num/bracket + (math.sign(num) * 0.5)) * bracket
-					if a < 0 then
-						a = a + bracket
-					end
-					return a
-				end
-
-				slider.set = function(value3)
-					value3 = round(value3, 1)
-					value3 = math.clamp(value3, min, max)
-					local value = math.clamp(value3, min, max)
-					if min >= 0 then
-						uiSliderFill:TweenSize(UDim2.new((value - min) / (max - min), 0, 1, 0), "Out", "Quad", 0.1, true)
-					else
-						uiSliderFill:TweenPosition(UDim2.new((0 - min) / (max - min), 0, 0, 0), "Out", "Quad", 0.1, true)
-						uiSliderFill:TweenSize(UDim2.new(value / (max - min), 0, 1, 0), "Out", "Quad", 0.1, true)
-					end
-					lib.flags[flag] = value3
-					pcall(callback, value3)
-					uiSliderLabel.Text = title.." ("..value3..suffix..")"
-					value3 = nil
-				end
-
-				uiSliderBack.InputBegan:connect(function(input)
-					if input.UserInputType == Enum.UserInputType.MouseButton1 and not lib.inDropdown and not lib.inColorPicker then
-						sliding = true
-						slider.set(min + ((input.Position.X - uiSliderBack.AbsolutePosition.X) / uiSliderBack.AbsoluteSize.X) * (max - min))
-					end
-					if input.UserInputType == Enum.UserInputType.MouseMovement and not lib.inDropdown and not lib.inColorPicker then
-						inContact = true
-					end
-				end)
-
-				game:service"UserInputService".InputChanged:connect(function(input)
-					if input.UserInputType == Enum.UserInputType.MouseMovement and sliding then
-						slider.set(min + ((input.Position.X - uiSliderBack.AbsolutePosition.X) / uiSliderBack.AbsoluteSize.X) * (max - min))
-					end
-				end)
-
-				uiSliderBack.InputEnded:connect(function(input)
-					if input.UserInputType == Enum.UserInputType.MouseButton1 then
-						sliding = false
-					end
-					if input.UserInputType == Enum.UserInputType.MouseMovement then
-						inContact = false
-					end
-				end)
-
-				slider.set(lib.flags[flag])
-
-				return slider
-			end
-
-			things.createColorpicker = function(title, default, addon, flag, callback)
-				if localxs % 2 == 0 then
-					xl = xl + 20
-				else
-					xr = xr + 20
-				end; uiTabSection.Size = UDim2.new(uiTabSection.Size.X.Scale, uiTabSection.Size.X.Offset, uiTabSection.Size.Y.Scale, uiTabSection.Size.Y.Offset + 20)
-				local uiSectionColorpicker = Instance.new("Frame")
-				local uiColorOutline = Instance.new("Frame")
-				local uiColorButton = Instance.new("Frame")
-				local uiColorOutline2 = Instance.new("Frame")
-				local uiColorIn = Instance.new("Frame")
-				local uiColorFrame = Instance.new("Frame")
-				local uiColorOverlay1 = Instance.new("ImageLabel")
-				local uiColorOverlay12 = Instance.new("ImageLabel")
-				local uiColorSlider = Instance.new("Frame")
-				local UIGradient = Instance.new("UIGradient")
-				local uiGradientSlider = Instance.new("Frame")
-				local UIGradient_2 = Instance.new("UIGradient")
-				local uiColorClose = Instance.new("TextLabel")
-				local uiColorLabel = Instance.new("TextLabel")
-				local uiButton;
-				local transparency = -1
-				local daX = 0
-				local daY = 0
-				local colorpickerlib = {}
-				lib.flags[flag] = default
-				lib.flags[flag.."2"] = false
-				lib.flags[flag.."3"] = -1
-				
-				uiSectionColorpicker.Name = "uiSectionColorpicker"
-				uiSectionColorpicker.Parent = uiTabSectionHolder
-				uiSectionColorpicker.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				uiSectionColorpicker.BackgroundTransparency = 1.000
-				uiSectionColorpicker.Size = UDim2.new(1, 0, 0, 20)
-
-				uiColorOutline.Name = "uiColorOutline"
-				uiColorOutline.Parent = uiSectionColorpicker
-				uiColorOutline.BackgroundColor3 = Color3.fromRGB(53, 53, 53)
-				uiColorOutline.Position = UDim2.new(1, -25, 0.5, -7)
-				uiColorOutline.Size = UDim2.new(0, 22, 0, 14)
-				local uiCorner = Instance.new("UICorner",uiColorOutline); uiCorner.CornerRadius = UDim.new(0,3)
-
-				uiColorButton.Name = "uiColorButton"
-				uiColorButton.Parent = uiColorOutline
-				uiColorButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				uiColorButton.Position = UDim2.new(0, 1, 0, 1)
-				uiColorButton.Size = UDim2.new(0, 20, 0, 12)
-				local uiCorner = Instance.new("UICorner",uiColorButton); uiCorner.CornerRadius = UDim.new(0,3)
-
-				uiColorOutline2.Name = "uiColorOutline2"
-				uiColorOutline2.Parent = uiColorOutline
-				uiColorOutline2.BackgroundColor3 = Color3.fromRGB(53, 53, 53)
-				uiColorOutline2.Position = UDim2.new(1, 23, 0, 0)
-				uiColorOutline2.Size = UDim2.new(0, 170, 0, 170)
-				uiColorOutline2.Visible = false
-				uiColorOutline2.ZIndex = 3
-				local uiCorner = Instance.new("UICorner",uiColorOutline2); uiCorner.CornerRadius = UDim.new(0,3)
-
-				uiColorIn.Name = "uiColorIn"
-				uiColorIn.Parent = uiColorOutline2
-				uiColorIn.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-				uiColorIn.Position = UDim2.new(0, 1, 0, 1)
-				uiColorIn.Size = UDim2.new(0, 168, 0, 168)
-				uiColorIn.ZIndex = 4
-				local uiCorner = Instance.new("UICorner",uiColorIn); uiCorner.CornerRadius = UDim.new(0,3)
-
-				uiColorFrame.Name = "uiColorFrame"
-				uiColorFrame.Parent = uiColorIn
-				uiColorFrame.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
-				uiColorFrame.BorderSizePixel = 0
-				uiColorFrame.Position = UDim2.new(0, 6, 0, 6)
-				uiColorFrame.Size = UDim2.new(0, 135, 0, 135)
-				uiColorFrame.ZIndex = 4
-				local uiCorner = Instance.new("UICorner",uiColorFrame); uiCorner.CornerRadius = UDim.new(0,8)
-
-				uiColorOverlay1.Name = "uiColorOverlay1"
-				uiColorOverlay1.Parent = uiColorFrame
-				uiColorOverlay1.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				uiColorOverlay1.BackgroundTransparency = 1.000
-				uiColorOverlay1.BorderSizePixel = 0
-				uiColorOverlay1.Size = UDim2.new(1, 0, 1, 0)
-				uiColorOverlay1.ZIndex = 5
-				uiColorOverlay1.Image = "rbxassetid://5107152095"
-				uiColorOverlay1.SliceScale = 0.000
-
-				uiColorOverlay12.Name = "uiColorOverlay12"
-				uiColorOverlay12.Parent = uiColorFrame
-				uiColorOverlay12.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				uiColorOverlay12.BackgroundTransparency = 1.000
-				uiColorOverlay12.BorderSizePixel = 0
-				uiColorOverlay12.Size = UDim2.new(1, 0, 1, 0)
-				uiColorOverlay12.ZIndex = 4
-				uiColorOverlay12.Image = "rbxassetid://5107152351"
-				uiColorOverlay12.SliceScale = 0.000
-
-				uiColorSlider.Name = "uiColorSlider"
-				uiColorSlider.Parent = uiColorIn
-				uiColorSlider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				uiColorSlider.BorderSizePixel = 0
-				uiColorSlider.Position = UDim2.new(1, -21, 0, 6)
-				uiColorSlider.Size = UDim2.new(0, 15, 0, 134)
-				uiColorSlider.ZIndex = 4
-				local uiCorner = Instance.new("UICorner",uiColorSlider); uiCorner.CornerRadius = UDim.new(0,3)
-
-				UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 0)), ColorSequenceKeypoint.new(0.17, Color3.fromRGB(255, 255, 0)), ColorSequenceKeypoint.new(0.33, Color3.fromRGB(0, 255, 0)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(0, 255, 255)), ColorSequenceKeypoint.new(0.66, Color3.fromRGB(0, 0, 255)), ColorSequenceKeypoint.new(0.82, Color3.fromRGB(255, 0, 255)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 0))}
-				UIGradient.Rotation = 90
-				UIGradient.Parent = uiColorSlider
-
-				uiGradientSlider.Name = "uiGradientSlider"
-				uiGradientSlider.Parent = uiColorIn
-				uiGradientSlider.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				uiGradientSlider.BorderSizePixel = 0
-				uiGradientSlider.Position = UDim2.new(0, 7, 1, -21)
-				uiGradientSlider.Size = UDim2.new(0, 134, 0, 15)
-				uiGradientSlider.ZIndex = 4
-				local uiCorner = Instance.new("UICorner",uiGradientSlider); uiCorner.CornerRadius = UDim.new(0,3)
-
-				UIGradient_2.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 255, 255)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 0, 0))}
-				UIGradient_2.Parent = uiGradientSlider
-
-				local transparencyImage = Instance.new("ImageLabel") -- UPDATE\
-				local uiCorner = Instance.new("UICorner",transparencyImage); uiCorner.CornerRadius = UDim.new(0,3)
-
-				transparencyImage.Name = "transparencyImage"
-				transparencyImage.Parent = uiGradientSlider
-				transparencyImage.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				transparencyImage.BackgroundTransparency = 1.000
-				transparencyImage.Size = UDim2.new(1, 0, 1, 0)
-				transparencyImage.ZIndex = 5
-				transparencyImage.Image = "http://www.roblox.com/asset/?id=8657422630"
-				transparencyImage.ImageTransparency = 0.900
-				transparencyImage.SliceCenter = Rect.new(0, 0, 5, 0)
-				transparencyImage.SliceScale = 0.015
-
-				uiColorClose.Name = "uiColorClose"
-				uiColorClose.Parent = uiColorIn
-				uiColorClose.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				uiColorClose.BackgroundTransparency = 1.000
-				uiColorClose.Position = UDim2.new(1, -22, 1, -22)
-				uiColorClose.Size = UDim2.new(0, 15, 0, 15)
-				uiColorClose.ZIndex = 4
-				uiColorClose.Font = Enum.Font.ArialBold
-				uiColorClose.Text = "X"
-				uiColorClose.TextColor3 = Color3.fromRGB(208, 208, 208)
-				uiColorClose.TextSize = 14.000
-
-				uiColorLabel.Name = "uiColorLabel"
-				uiColorLabel.Parent = uiSectionColorpicker
-				uiColorLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				uiColorLabel.BackgroundTransparency = 1.000
-				if not addon then
-					uiColorLabel.Position = UDim2.new(0, 6, 0, 0)
-				else
-					uiColorLabel.Position = UDim2.new(0, 26, 0, 0)
-				end
-				if not addon then
-					uiColorLabel.Size = UDim2.new(0, 200, 0, 19)
-				else
-					uiColorLabel.Size = UDim2.new(0, 170, 0, 19)
-				end
-				uiColorLabel.Font = Enum.Font.Arial
-				uiColorLabel.Text = title
-				uiColorLabel.TextColor3 = Color3.fromRGB(208, 208, 208)
-				uiColorLabel.TextSize = 14.000
-				uiColorLabel.TextStrokeTransparency = 0.220
-				uiColorLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-				if addon then
-					local uiButtonOutline = Instance.new("Frame")
-					uiButton = Instance.new("Frame")
-
-					uiButtonOutline.Name = "uiButtonOutline"
-					uiButtonOutline.Parent = uiSectionColorpicker
-					uiButtonOutline.BackgroundColor3 = Color3.fromRGB(53, 53, 53)
-					uiButtonOutline.Position = UDim2.new(0, 6, 0.5, -7)
-					uiButtonOutline.Size = UDim2.new(0, 14, 0, 14)
-					local uiCorner = Instance.new("UICorner",uiButtonOutline); uiCorner.CornerRadius = UDim.new(0,3)
-
-					uiButton.Name = "uiButton"
-					uiButton.Parent = uiButtonOutline
-					uiButton.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-					uiButton.Position = UDim2.new(0, 1, 0, 1)
-					uiButton.Size = UDim2.new(0, 12, 0, 12)
-					local uiCorner = Instance.new("UICorner",uiButton); uiCorner.CornerRadius = UDim.new(0,3)
-
-					uiButton.InputBegan:Connect(function(input)
-						if input.UserInputType == Enum.UserInputType.MouseButton1 and not lib.inDropdown then
-							lib.flags[flag.."2"] = not lib.flags[flag.."2"]
-							if lib.flags[flag.."2"] then
-								game:GetService("TweenService"):Create(uiButton,TweenInfo.new(0.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundColor3 = lib.accent}):Play()
-							else
-								game:GetService("TweenService"):Create(uiButton,TweenInfo.new(0.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundColor3 = Color3.fromRGB(35, 35, 35)}):Play()
-							end
-							pcall(callback, uiColorButton.BackgroundColor3, transparency, lib.flags[flag.."2"])
-						end
-					end)
-
-					uiColorLabel.InputBegan:Connect(function(input)
-						if input.UserInputType == Enum.UserInputType.MouseButton1 and not lib.inDropdown then
-							lib.flags[flag.."2"] = not lib.flags[flag.."2"]
-							if lib.flags[flag.."2"] then
-								game:GetService("TweenService"):Create(uiButton,TweenInfo.new(0.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundColor3 = lib.accent}):Play()
-							else
-								game:GetService("TweenService"):Create(uiButton,TweenInfo.new(0.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundColor3 = Color3.fromRGB(35, 35, 35)}):Play()
-							end
-							pcall(callback, uiColorButton.BackgroundColor3, transparency, lib.flags[flag.."2"])
-						end
-					end)
-
-					table.insert(lib.accentItems, uiButton)
-				end
-
-				local TransInput, HueInput, ColorInput;
-
-				local ColorH =
-					1 -
-					(math.clamp(daY - uiColorSlider.AbsolutePosition.Y, 0, uiColorSlider.AbsoluteSize.Y) /
-						uiColorSlider.AbsoluteSize.Y)
-				local ColorS =
-					(math.clamp(daX - uiColorFrame.AbsolutePosition.X, 0, uiColorFrame.AbsoluteSize.X) /
-						uiColorFrame.AbsoluteSize.X)
-				local ColorV =
-					1 -
-					(math.clamp(daX - uiColorFrame.AbsolutePosition.Y, 0, uiColorFrame.AbsoluteSize.Y) /
-						uiColorFrame.AbsoluteSize.Y)
-
-
-				local function UpdateColorPicker(nope)
-					uiColorButton.BackgroundColor3 = Color3.fromHSV(ColorH, ColorS, ColorV)
-					uiColorFrame.BackgroundColor3 = Color3.fromHSV(ColorH, 1, 1)
-
-					if not addon then
-					    lib.flags[flag] = uiColorButton.BackgroundColor3
-					    lib.flags[flag.."3"] = transparency
-						pcall(callback, uiColorButton.BackgroundColor3, transparency)
-					else
-						pcall(callback, uiColorButton.BackgroundColor3, transparency, lib.flags[flag.."2"])
-					end
-				end
-
-				uiColorButton.BackgroundColor3 = default
-				uiColorFrame.BackgroundColor3 = default
-
-				uiColorFrame.InputBegan:Connect(
-					function(input)
-						if input.UserInputType == Enum.UserInputType.MouseButton1 then
-							if ColorInput then
-								ColorInput:Disconnect()
-							end
-
-							ColorInput =
-								game:service"RunService".RenderStepped:Connect(
-									function()
-										local ColorX =
-										(math.clamp(Mouse.X - uiColorFrame.AbsolutePosition.X, 0, uiColorFrame.AbsoluteSize.X) /
-											uiColorFrame.AbsoluteSize.X)
-										local ColorY =
-										(math.clamp(Mouse.Y - uiColorFrame.AbsolutePosition.Y, 0, uiColorFrame.AbsoluteSize.Y) /
-											uiColorFrame.AbsoluteSize.Y)
-
-										daX = UDim2.new(ColorX - 0.05, 0, ColorY - 0.05, 0)
-										ColorS = ColorX
-										ColorV = 1 - ColorY
-
-										UpdateColorPicker(true);  ColorX = nil; ColorY = nil
-									end
-								)
-						end
-					end
-				)
-
-				uiColorFrame.InputEnded:Connect(
-					function(input)
-						if input.UserInputType == Enum.UserInputType.MouseButton1 then
-							if ColorInput then
-								ColorInput:Disconnect()
-							end
-						end
-					end
-				)
-
-				uiColorSlider.InputBegan:Connect(
-					function(input)
-						if input.UserInputType == Enum.UserInputType.MouseButton1 then
-
-							if HueInput then
-								HueInput:Disconnect()
-							end
-
-							HueInput =
-								game:service"RunService".RenderStepped:Connect(
-									function()
-										local HueY =
-										(math.clamp(Mouse.Y - uiColorSlider.AbsolutePosition.Y, 0, uiColorSlider.AbsoluteSize.Y) /
-											uiColorSlider.AbsoluteSize.Y)
-
-										daY = UDim2.new(0, 0, HueY - 0.05, 0)
-										if HueY - 0.061 >= 0 then
-										ColorH = HueY - 0.061
-									else
-										ColorH = 0
-									end
-
-										UpdateColorPicker(true); HueY = nil
-									end
-								)
-						end
-					end
-				)
-
-				uiColorSlider.InputEnded:Connect(
-					function(input)
-						if input.UserInputType == Enum.UserInputType.MouseButton1 then
-							if HueInput then
-								HueInput:Disconnect()
-							end
-						end
-					end
-				)
-
-				uiGradientSlider.InputBegan:Connect(
-					function(input)
-						if input.UserInputType == Enum.UserInputType.MouseButton1 then
-
-							if TransInput then
-								TransInput:Disconnect()
-							end
-
-							TransInput =
-								game:service"RunService".RenderStepped:Connect(
-									function()
-										transparency =
-										(math.clamp(Mouse.X - uiGradientSlider.AbsolutePosition.X, 0, uiGradientSlider.AbsoluteSize.X) /
-											uiGradientSlider.AbsoluteSize.X)
-											transparency = transparency - 1
-
-										UpdateColorPicker(true)
-									end
-								)
-						end
-					end
-				)
-
-				uiGradientSlider.InputEnded:Connect(
-					function(input)
-						if input.UserInputType == Enum.UserInputType.MouseButton1 then
-							if TransInput then
-								TransInput:Disconnect()
-							end
-						end
-					end
-				)
-
-				uiColorButton.InputBegan:Connect(function(input, gpe)
-					if input.UserInputType == Enum.UserInputType.MouseButton1 then
-					    if lib.inColorPicker == uiColorButton then
-    						uiColorOutline2.Visible = not uiColorOutline2.Visible
-    						if uiColorOutline2.Visible then
-    						    lib.inColorPicker = uiColorButton
-    						else
-    						    lib.inColorPicker = false
-    						end
-    					elseif lib.inColorPicker == false then
-    					    uiColorOutline2.Visible = not uiColorOutline2.Visible
-    						if uiColorOutline2.Visible then
-    						    lib.inColorPicker = uiColorButton
-    						else
-    						    lib.inColorPicker = false
-    						end
-    					end
-					end
-				end)
-
-				uiColorClose.InputBegan:Connect(function(input, gpe)
-					if input.UserInputType == Enum.UserInputType.MouseButton1 then
-						uiColorOutline2.Visible = not uiColorOutline2.Visible
-						lib.inColorPicker = false
-					end
-				end)
-
-				colorpickerlib.set = function(clr, trans, tog)
-					uiColorButton.BackgroundColor3 = Color3.fromRGB(clr[1],clr[2],clr[3]); uiColorFrame.BackgroundColor3 = Color3.fromRGB(clr[1],clr[2],clr[3])
-					transparency = trans
-					lib.flags[flag] = Color3.fromRGB(clr[1],clr[2],clr[3])
-					if addon then
-					    lib.flags[flag.."2"] = tog
-					end
-					lib.flags[flag.."3"] = trans
-					if addon then
-					     if addon then
-    						if lib.flags[flag.."2"] then
-    							game:GetService("TweenService"):Create(uiButton,TweenInfo.new(0.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundColor3 = lib.accent}):Play()
-    						else
-    							game:GetService("TweenService"):Create(uiButton,TweenInfo.new(0.25,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundColor3 = Color3.fromRGB(35, 35, 35)}):Play()
-    						end
-    					end
-						pcall(callback, uiColorButton.BackgroundColor3, trans, tog)
-					else
-						pcall(callback, uiColorButton.BackgroundColor3, trans)
-					end
-				end
-
-				return colorpickerlib
-			end
-
-			things.createDropdown = function(title, options, flag, callback)
-				if localxs % 2 == 0 then
-					xl = xl + 42
-				else
-					xr = xr + 42
-				end; uiTabSection.Size = UDim2.new(uiTabSection.Size.X.Scale, uiTabSection.Size.X.Offset, uiTabSection.Size.Y.Scale, uiTabSection.Size.Y.Offset + 42)
-				local uiSectionDropdown = Instance.new("Frame")
-				local uiDropdownLabel = Instance.new("TextLabel")
-				local uiDropdownOutline = Instance.new("Frame")
-				local uiDropdownBack = Instance.new("Frame")
-				local uiSliderSelectionsLabel = Instance.new("TextLabel")
-				local uiDropdownBack2 = Instance.new("Frame")
-				local UIListLayout = Instance.new("UIListLayout")
-				local dropdownLabels = {}
-				local dropdownLib = {}
-				local size = 0
-				local closing = false
-				local open = false
-				lib.flags[flag] = "none"
-				
-				uiSectionDropdown.Name = "uiSectionDropdown"
-				uiSectionDropdown.Parent = uiTabSectionHolder
-				uiSectionDropdown.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				uiSectionDropdown.BackgroundTransparency = 1.000
-				uiSectionDropdown.Size = UDim2.new(1, 0, 0, 42)
-
-				uiDropdownLabel.Name = "uiDropdownLabel"
-				uiDropdownLabel.Parent = uiSectionDropdown
-				uiDropdownLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				uiDropdownLabel.BackgroundTransparency = 1.000
-				uiDropdownLabel.Position = UDim2.new(0, 8, 0, 0)
-				uiDropdownLabel.Size = UDim2.new(0, 200, 0, 19)
-				uiDropdownLabel.Font = Enum.Font.Arial
-				uiDropdownLabel.Text = title
-				uiDropdownLabel.TextColor3 = Color3.fromRGB(208, 208, 208)
-				uiDropdownLabel.TextSize = 14.000
-				uiDropdownLabel.TextStrokeTransparency = 0.350
-				uiDropdownLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-				uiDropdownOutline.Name = "uiDropdownOutline"
-				uiDropdownOutline.Parent = uiSectionDropdown
-				uiDropdownOutline.BackgroundColor3 = Color3.fromRGB(53, 53, 53)
-				uiDropdownOutline.Position = UDim2.new(0, 7, 0, 19)
-				uiDropdownOutline.Size = UDim2.new(1, -10, 0, 19)
-				local uiCorner = Instance.new("UICorner",uiDropdownOutline); uiCorner.CornerRadius = UDim.new(0,3)
-
-				uiDropdownBack.Name = "uiDropdownBack"
-				uiDropdownBack.Parent = uiDropdownOutline
-				uiDropdownBack.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-				uiDropdownBack.Position = UDim2.new(0, 1, 0, 1)
-				uiDropdownBack.Size = UDim2.new(1, -2, 1, -2)
-				uiDropdownBack.ZIndex = 4
-				local uiCorner = Instance.new("UICorner",uiDropdownBack); uiCorner.CornerRadius = UDim.new(0,3)
-
-				uiSliderSelectionsLabel.Name = "uiSliderSelectionsLabel"
-				uiSliderSelectionsLabel.Parent = uiDropdownBack
-				uiSliderSelectionsLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				uiSliderSelectionsLabel.BackgroundTransparency = 1.000
-				uiSliderSelectionsLabel.Position = UDim2.new(0, 5, 0, 0)
-				uiSliderSelectionsLabel.Size = UDim2.new(1, -25, 0, 17)
-				uiSliderSelectionsLabel.ZIndex = 4
-				uiSliderSelectionsLabel.Font = Enum.Font.Arial
-				uiSliderSelectionsLabel.Text = "none"
-				uiSliderSelectionsLabel.TextColor3 = Color3.fromRGB(208, 208, 208)
-				uiSliderSelectionsLabel.TextSize = 11.000
-				uiSliderSelectionsLabel.TextStrokeTransparency = 0.350
-				uiSliderSelectionsLabel.TextWrapped = true
-				uiSliderSelectionsLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-				uiDropdownBack2.Name = "uiDropdownBack2"
-				uiDropdownBack2.Parent = uiDropdownBack
-				uiDropdownBack2.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-				uiDropdownBack2.BorderColor3 = Color3.fromRGB(53, 53, 53)
-				uiDropdownBack2.Position = UDim2.new(0, 1, 1, 0)
-				uiDropdownBack2.Size = UDim2.new(1, -2, 0, 0)
-				uiDropdownBack2.Visible = false
-				uiDropdownBack2.ZIndex = 5
-				uiDropdownBack2.ClipsDescendants = true
-
-				UIListLayout.Parent = uiDropdownBack2
-				UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-				UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-
-				for i,v in pairs(options) do
-					size = size + 17
-					local uiSliderSelection = Instance.new("TextLabel")
-					table.insert(dropdownLabels, uiSliderSelection)
-					uiSliderSelection.Name = "uiSliderSelection"
-					uiSliderSelection.Parent = uiDropdownBack2
-					uiSliderSelection.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-					uiSliderSelection.BackgroundTransparency = 1.000
-					uiSliderSelection.Position = UDim2.new(0, 4, 0, 0)
-					uiSliderSelection.Size = UDim2.new(1, -8, 0, 17)
-					uiSliderSelection.ZIndex = 5
-					uiSliderSelection.Font = Enum.Font.Arial
-					uiSliderSelection.Text = v
-					uiSliderSelection.TextColor3 = Color3.fromRGB(208, 208, 208)
-					uiSliderSelection.TextSize = 11.000
-					uiSliderSelection.TextStrokeTransparency = 0.350
-					uiSliderSelection.TextWrapped = true
-					uiSliderSelection.TextXAlignment = Enum.TextXAlignment.Left
-
-					table.insert(lib.accentItems, uiSliderSelection)
-
-					uiSliderSelection.InputBegan:Connect(function(input)
-						if input.UserInputType == Enum.UserInputType.MouseButton1 then
-							if lib.flags[flag] ~= uiSliderSelection.Text then
-								game:GetService("TweenService"):Create(uiSliderSelection,TweenInfo.new(0.33,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{TextColor3 = lib.accent}):Play()
-								for i,v in pairs(dropdownLabels) do
-									if v ~= uiSliderSelection then
-										game:GetService("TweenService"):Create(v,TweenInfo.new(0.33,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{TextColor3 = Color3.fromRGB(208, 208, 208)}):Play()
-									end
-								end
-								lib.flags[flag] = v
-							else
-								for i,v in pairs(dropdownLabels) do
-									game:GetService("TweenService"):Create(v,TweenInfo.new(0.33,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{TextColor3 = Color3.fromRGB(208, 208, 208)}):Play()
-								end
-								lib.flags[flag] = "none"
-							end
-							uiSliderSelectionsLabel.Text = lib.flags[flag]
-							pcall(callback, lib.flags[flag])
-						end
-					end)
-				end
-				
-				dropdownLib.set = function(option)
-					for i,v in pairs(dropdownLabels) do
-						if v.Text == option then
-							game:GetService("TweenService"):Create(v,TweenInfo.new(0.33,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{TextColor3 = lib.accent}):Play()
-						else
-							game:GetService("TweenService"):Create(v,TweenInfo.new(0.33,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{TextColor3 = Color3.fromRGB(208, 208, 208)}):Play()
-						end
-					end
-					uiSliderSelectionsLabel.Text = option
-					lib.flags[flag] = option
-				end
-
-				uiSliderSelectionsLabel.InputBegan:Connect(function(input)
-					if input.UserInputType == Enum.UserInputType.MouseButton1 then
-						if open and lib.inDropdown then
-							if not closing then
-								open = not open
-								uiDropdownBack2.Visible = true
-								closing = true
-								if open then
-									game:GetService("TweenService"):Create(uiDropdownBack2,TweenInfo.new(0.33,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Size = UDim2.new(1, -2, 0, size)}):Play()
-									lib.inDropdown = true
-								else
-									lib.inDropdown = false
-									game:GetService("TweenService"):Create(uiDropdownBack2,TweenInfo.new(0.33,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Size = UDim2.new(1, -2, 0, 0)}):Play()
-								end
-								wait(0.25)
-								if not open then
-									uiDropdownBack2.Visible = false
-								end
-								closing = false
-							end
-						elseif not open and not lib.inDropdown then
-							if not closing then
-								open = not open
-								uiDropdownBack2.Visible = true
-								closing = true
-								if open then
-									game:GetService("TweenService"):Create(uiDropdownBack2,TweenInfo.new(0.33,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Size = UDim2.new(1, -2, 0, size)}):Play()
-									lib.inDropdown = true
-								else
-									lib.inDropdown = false
-									game:GetService("TweenService"):Create(uiDropdownBack2,TweenInfo.new(0.33,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{Size = UDim2.new(1, -2, 0, 0)}):Play()
-								end
-								wait(0.25)
-								if not open then
-									uiDropdownBack2.Visible = false
-								end
-								closing = false
-							end
-						end
-					end
-				end)
-				
-				return dropdownLib
-			end
-
-			things.createButton = function(title, callback)
-				if localxs % 2 == 0 then
-					xl = xl + 27
-				else
-					xr = xr + 27
-				end; uiTabSection.Size = UDim2.new(uiTabSection.Size.X.Scale, uiTabSection.Size.X.Offset, uiTabSection.Size.Y.Scale, uiTabSection.Size.Y.Offset + 27)
-				local uiSliderSelection = Instance.new("TextLabel")
-				local uiSectionButton = Instance.new("Frame")
-				local uiButton = Instance.new("Frame")
-				local uiButtonBack = Instance.new("Frame")
-				local uiButtonLabel = Instance.new("TextLabel")
-
-				uiSectionButton.Name = "uiSectionButton2"
-				uiSectionButton.Parent = uiTabSectionHolder
-				uiSectionButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				uiSectionButton.BackgroundTransparency = 1.000
-				uiSectionButton.Size = UDim2.new(1, 0, 0, 27)
-
-				uiButton.Name = "uiButton"
-				uiButton.Parent = uiSectionButton
-				uiButton.BackgroundColor3 = Color3.fromRGB(53, 53, 53)
-				uiButton.Position = UDim2.new(0, 7, 0, 3)
-				uiButton.Size = UDim2.new(1, -10, 0, 21)
-				local uiCorner = Instance.new("UICorner",uiButton); uiCorner.CornerRadius = UDim.new(0,3)
-
-				uiButtonBack.Name = "uiButtonBack"
-				uiButtonBack.Parent = uiButton
-				uiButtonBack.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-				uiButtonBack.Position = UDim2.new(0, 1, 0, 1)
-				uiButtonBack.Size = UDim2.new(1, -2, 1, -2)
-				uiButtonBack.ZIndex = 2
-				uiButtonBack.ClipsDescendants = true
-
-				uiButtonLabel.Name = "uiButtonLabel"
-				uiButtonLabel.Parent = uiButtonBack
-				uiButtonLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-				uiButtonLabel.BackgroundTransparency = 1.000
-				uiButtonLabel.Size = UDim2.new(1, 0, 1, 0)
-				uiButtonLabel.ZIndex = 3
-				uiButtonLabel.Font = Enum.Font.Arial
-				uiButtonLabel.Text = title
-				uiButtonLabel.TextColor3 = Color3.fromRGB(208, 208, 208)
-				uiButtonLabel.TextSize = 12.000
-				uiButtonLabel.TextStrokeTransparency = 0.220
-				uiButtonLabel.TextWrapped = true
-
-				local uiCorner = Instance.new("UICorner",uiButtonBack); uiCorner.CornerRadius = UDim.new(0,3)
-
-				uiSectionButton.InputBegan:Connect(function(input)
-					if input.UserInputType == Enum.UserInputType.MouseButton1 and not lib.inDropdown and not lib.inColorPicker then
-						local Frame = Instance.new("Frame")
-						Frame.Parent = uiButtonBack
-						Frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-						Frame.BackgroundTransparency = 1
-						Frame.Size = UDim2.new(0, 0, 0, 30)
-						Frame.ZIndex = 3
-						local uiCorner = Instance.new("UICorner",Frame); uiCorner.CornerRadius = UDim.new(1,0)
-						spawn(function()
-							while Frame ~= nil do
-								Frame.Position = UDim2.new(0.5, -Frame.Size.X.Offset/2, 0.5, -Frame.Size.Y.Offset/2)
-								game:service"RunService".Stepped:Wait()
-							end
-						end)
-						game:GetService("TweenService"):Create(Frame,TweenInfo.new(0.33,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{BackgroundTransparency = 0.700}):Play()
-						spawn(function()
-							game:GetService("TweenService"):Create(Frame,TweenInfo.new(0.6,Enum.EasingStyle.Quint,Enum.EasingDirection.Out),{Size = UDim2.new(0, 250, 0, 30)}):Play()
-							wait(0.244)
-							game:GetService("TweenService"):Create(Frame,TweenInfo.new(0.38,Enum.EasingStyle.Quart,Enum.EasingDirection.Out),{BackgroundTransparency = 1.00}):Play()
-							wait(0.36)
-							Frame:Destroy()
-						end)
-						pcall(callback)
-					end
-				end)
-			end
-
-			return things
-		end
-
-		return tab
-	end
-
-	return window
+                TabTitle.Position = Vector2.new(TabOutline.Position.X + (TabOutline.Size.X / 2), TabOutline.Position.Y + (TabOutline.Size.Y / 2) - 7)
+            end
+            --
+            function Tab:RemoveDrawing(Instance)
+                local SpecificDrawing = 0
+                for Index, Value in pairs(Tab["Render"]) do 
+                    if Value == Instance then
+                        SpecificDrawing = Index
+                    end
+                end
+                table.remove(Tab["Render"], table.find(Tab["Render"], Tab["Render"][SpecificDrawing]))
+                --
+                local SpecificDrawing2 = 0
+                for Index, Value in pairs(Library.Drawings) do 
+                    if Value[1] == Instance then
+                        if Value[1] then
+                            Value[1]:Remove()
+                        end
+                        if Value[2] then
+                            Value[2] = nil
+                        end
+                        SpecificDrawing2 = Index
+                    end
+                end
+                table.remove(Library.Drawings, table.find(Library.Drawings, Library.Drawings[SpecificDrawing2]))
+            end
+            --
+            function Tab:Section(Title, Side)
+                local Section = {
+                    ContentAxis = 0
+                }
+                --
+                local AxisX = Side == "Left" and SecondBorderOutline.Position.X + 6 or SecondBorderOutline.Position.X + ((SecondBorderOutline.Size.X / 2) - 10) + 12
+                local SectionInline = Utility.AddDrawing("Square", {
+                    Position = Vector2.new(AxisX, (Tab.SectionAxis[Side == "Left" and 1 or 2] == 0 and TabOutline.Position.Y + TabOutline.Size.Y + 6 or 6 + Tab.SectionAxis[Side == "Left" and 1 or 2])),
+                    Size = Vector2.new((SecondBorderOutline.Size.X / 2) - 8, 24),
+                    Thickness = 0,
+                    Color = Library.Theme.Inline,
+                    Visible = true,
+                    Filled = true
+                })
+                --
+                local SectionOutline = Utility.AddDrawing("Square", {
+                    Size = Vector2.new(SectionInline.Size.X - 2, SectionInline.Size.Y - 2),
+                    Position = Vector2.new(SectionInline.Position.X + 1, SectionInline.Position.Y + 1),
+                    Thickness = 0,
+                    Color = Library.Theme.DarkContrast, --Library.Theme.Outline,
+                    Visible = true,
+                    Filled = true
+                })
+                --
+                local SectionTopline = Utility.AddDrawing("Square", {
+                    Size = Vector2.new(SectionOutline.Size.X, 1),
+                    Position = Vector2.new(SectionOutline.Position.X, SectionOutline.Position.Y),
+                    Thickness = 0,
+                    Color = Library.Theme.Accent[1],
+                    Visible = true,
+                    Filled = true
+                })
+                --
+                local SectionTitle = Utility.AddDrawing("Text", {
+                    Text = Title,
+                    Position = Vector2.new(SectionOutline.Position.X + 4, SectionOutline.Position.Y + 4),
+                    Center = false,
+                    Outline = false,
+                    Font = Library.Theme.Font,
+                    Size = Library.Theme.TextSize,
+                    Color = Library.Theme.Text,
+                    Visible = true,
+                    ZIndex = 2
+                })
+                --
+                Utility.AddConnection(Library.Communication.Event, function(Type, Color)
+                    if Type == "Accent" then
+                        SectionTopline.Color = Color
+                    elseif Type == "DarkContrast" then
+                        SectionOutline.Color = Color
+                    elseif Type == "Text" then
+                        SectionTitle.Color = Color
+                    elseif Type == "Inline" then
+                        SectionInline.Color = Color
+                    end
+                end)
+                --
+                function Section:UpdateSizeY(SizeY)
+                    SectionInline.Size = Vector2.new(SectionInline.Size.X, SizeY + 10)
+
+                    SectionOutline.Size = Vector2.new(SectionInline.Size.X - 2, SectionInline.Size.Y - 2)
+                    SectionOutline.Position = Vector2.new(SectionInline.Position.X + 1, SectionInline.Position.Y + 1)
+                end
+                --
+                Tab.SectionAxis = {
+                    Side == "Left" and SectionInline.Position.Y + SectionInline.Size.Y or Tab.SectionAxis[1], 
+                    Side == "Right" and SectionInline.Position.Y + SectionInline.Size.Y or Tab.SectionAxis[2]
+                }
+                --
+                Tab["Render"][#Tab["Render"] + 1] = SectionInline
+                Tab["Render"][#Tab["Render"] + 1] = SectionOutline
+                Tab["Render"][#Tab["Render"] + 1] = SectionTopline
+                Tab["Render"][#Tab["Render"] + 1] = SectionTitle
+                --
+                function Section:Toggle(Options)
+                    local Toggle = {
+                        Axis = Section.ContentAxis,
+                        Toggled = Options.State,
+                        Drop = false,
+                        Callback = typeof(Options.Callback) == "function" and Options.Callback or function() end
+                    }
+                    --
+                    Options.Flag = Options.Flag or "AWGWJIjgAWJIGIJAWG"
+                    Library.Flags[Options.Flag] = false
+                    --
+                    local ToggleInline = Utility.AddDrawing("Square", {
+                        Position = Vector2.new(SectionInline.Position.X + 8, SectionInline.Position.Y + 23 + Toggle.Axis),
+                        Size = Vector2.new(13, 13),
+                        Thickness = 0,
+                        Color = Library.Theme.Inline,
+                        Visible = true,
+                        Filled = true
+                    })
+                    --
+                    local ToggleOutline = Utility.AddDrawing("Square", {
+                        Size = Vector2.new(ToggleInline.Size.X - 2, ToggleInline.Size.Y - 2),
+                        Position = Vector2.new(ToggleInline.Position.X + 1, ToggleInline.Position.Y + 1),
+                        Thickness = 0,
+                        Color = Library.Theme.LightContrast, --Library.Theme.Outline,
+                        Visible = true,
+                        Filled = true
+                    })
+                    --
+                    local ToggleHitbox = Utility.AddDrawing("Square", {
+                        Size = Vector2.new(SectionOutline.Size.X - 60, ToggleInline.Size.Y - 2),
+                        Position = Vector2.new(ToggleInline.Position.X + 1, ToggleInline.Position.Y + 1),
+                        Thickness = 0,
+                        Color = Library.Theme.Hitbox, --Library.Theme.Outline,
+                        Transparency = 0,
+                        Visible = true,
+                        Filled = true
+                    })
+                    --
+                    local ToggleGradient = Utility.AddDrawing("Image", {
+                        Size = Vector2.new(ToggleInline.Size.X - 2, ToggleInline.Size.Y - 2),
+                        Position = Vector2.new(ToggleInline.Position.X + 1, ToggleInline.Position.Y + 1),
+                        Data = Library.Theme.Gradient,
+                        Transparency = 0.5,
+                        Visible = true
+                    })
+                    --
+                    local ToggleTitle = Utility.AddDrawing("Text", {
+                        Text = Options.Title,
+                        Position = Vector2.new(ToggleInline.Position.X + ToggleInline.Size.X + 8, ToggleInline.Position.Y),
+                        Center = false,
+                        Outline = false,
+                        Font = Library.Theme.Font,
+                        Size = Library.Theme.TextSize,
+                        Color = Options.Type ~= nil and Options.Type == "Dangerous" and Library.Theme.Accent[1] or Library.Theme.Text,
+                        Visible = true,
+                        ZIndex = 2
+                    })
+                    --
+                    function Toggle:Set(State)
+                        Toggle.Toggled = State
+                        ToggleOutline.Color = Toggle.Toggled and Library.Theme.Accent[1] or Library.Theme.DarkContrast
+                        Library.Flags[Options.Flag] = Toggle.Toggled
+                        Toggle.Callback(Toggle.Toggled)
+                    end
+                    --
+                    Utility.AddConnection(UserInput.InputBegan, function(Input, Useless)
+                        
+                        for Index, Value in pairs(Tab.Dropdowns[Side]) do
+                            if Value then
+                                return
+                            end
+                        end
+                        if Input.UserInputType == Enum.UserInputType.MouseButton1 and Utility.OnMouse(ToggleHitbox) then
+                            Toggle.Toggled = not Toggle.Toggled
+                            Toggle:Set(Toggle.Toggled)
+                        end
+                    end)
+                    --
+                    Utility.AddConnection(UserInput.InputChanged, function(Input, Useless)
+                        if Input.UserInputType == Enum.UserInputType.MouseMovement then
+                            if Utility.OnMouse(ToggleHitbox) then
+                                ToggleInline.Color = Library.Theme.Accent[1]
+                            else
+                                ToggleInline.Color = Library.Theme.Inline
+                            end
+                        end
+                    end)
+                    --
+                    Utility.AddConnection(Library.Communication.Event, function(Type, Color)
+                        if Type == "Accent" and Toggle.Toggled then
+                            ToggleOutline.Color = Color
+                            if Options.Type == "Dangerous" then
+                                ToggleTitle.Color = Color
+                            end
+                        elseif Type == "LightContrast" and not Toggle.Toggled then
+                            ToggleOutline.Color = Color
+                        elseif Type == "Text" then
+                            ToggleTitle.Color = Color
+                        elseif Type == "Inline" then
+                            ToggleInline.Color = Color
+                        end
+                    end)
+                    --
+                    Section.ContentAxis = Section.ContentAxis + ToggleOutline.Size.Y + 8
+                    Tab.SectionAxis = {
+                        Side == "Left" and Tab.SectionAxis[1] + ToggleOutline.Size.Y + 8 or Tab.SectionAxis[1], 
+                        Side == "Right" and Tab.SectionAxis[2] + ToggleOutline.Size.Y + 8 or Tab.SectionAxis[2]
+                    }
+                    --
+                    self:UpdateSizeY(Section.ContentAxis + ToggleOutline.Size.Y)
+                    --
+                    Tab["Render"][#Tab["Render"] + 1] = ToggleInline
+                    Tab["Render"][#Tab["Render"] + 1] = ToggleOutline
+                    Tab["Render"][#Tab["Render"] + 1] = ToggleTitle
+                    Tab["Render"][#Tab["Render"] + 1] = ToggleGradient
+                    Tab["Render"][#Tab["Render"] + 1] = ToggleHitbox
+                    --
+                    function Toggle:Colorpicker(Options)
+                        local Colorpicker = {
+                            Axis = Section.ContentAxis,
+                            Color = Options.Color,
+                            HexColor = Options.Color:ToHex(),
+                            Dropped = false,
+                            Offsets = {
+                                X = 0,
+                                Y = 0
+                            },
+                            Colors = {
+                                HSV = {1, 1, 1}
+                            },
+                            SaturationDragging = false,
+                            HueDragging = false,
+                            Decimals = 50,
+                            Rainbow = false,
+                            Flag = Options.Flag,
+                            Callback = typeof(Options.Callback) == "function" and Options.Callback or function() end
+                        }
+                        --
+                        Colorpicker.Flag = Colorpicker.Flag or "AWIJGHUIWGHuAW"
+                        Library.Flags[Colorpicker.Flag] = Colorpicker.HexColor
+                        --
+                        local H, S, V = Colorpicker.Color:ToHSV()
+                        Colorpicker.Colors.HSV[1] = H
+                        Colorpicker.Colors.HSV[2] = S
+                        Colorpicker.Colors.HSV[3] = V
+                        --
+                        local ColorpickerInline = Utility.AddDrawing("Square", {
+                            Position = Vector2.new((SectionInline.Position.X + SectionInline.Size.X) - 38, ToggleInline.Position.Y + 1),
+                            Size = Vector2.new(30, 12),
+                            Thickness = 0,
+                            Color = Library.Theme.Inline,
+                            Visible = true,
+                            Filled = true
+                        })
+                        --
+                        local ColorpickerOutline = Utility.AddDrawing("Square", {
+                            Size = Vector2.new(ColorpickerInline.Size.X - 2, ColorpickerInline.Size.Y - 2),
+                            Position = Vector2.new(ColorpickerInline.Position.X + 1, ColorpickerInline.Position.Y + 1),
+                            Thickness = 0,
+                            Color = Library.Theme.LightContrast, --Library.Theme.Outline,
+                            Visible = true,
+                            Filled = true
+                        })
+                        --
+                        local ColorpickerBase = Utility.AddDrawing("Square", {
+                            Size = Vector2.new(ColorpickerInline.Size.X - 2, ColorpickerInline.Size.Y - 2),
+                            Position = Vector2.new(ColorpickerInline.Position.X + 1, ColorpickerInline.Position.Y + 1),
+                            Thickness = 0,
+                            Color = Colorpicker.Color, --Library.Theme.Outline,
+                            Visible = true,
+                            Filled = true
+                        })
+                        --
+                        local ColorpickerGradient = Utility.AddDrawing("Image", {
+                            Size = Vector2.new(ColorpickerInline.Size.X - 2, ColorpickerInline.Size.Y - 2),
+                            Position = Vector2.new(ColorpickerInline.Position.X + 1, ColorpickerInline.Position.Y + 1),
+                            Data = Library.Theme.Gradient,
+                            Transparency = 0.5,
+                            Visible = true
+                        })
+                        --
+                        local InternalInline = Utility.AddDrawing("Square", {
+                            Position = Vector2.new((ColorpickerInline.Position.X - 225) + ColorpickerInline.Size.X, ToggleInline.Position.Y + 18),
+                            Size = Vector2.new(225, 250),
+                            Thickness = 0,
+                            Color = Library.Theme.Inline,
+                            Visible = true,
+                            Filled = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local InternalOutline = Utility.AddDrawing("Square", {
+                            Size = Vector2.new(InternalInline.Size.X - 2, InternalInline.Size.Y - 2),
+                            Position = Vector2.new(InternalInline.Position.X + 1, InternalInline.Position.Y + 1),
+                            Thickness = 0,
+                            Color = Library.Theme.LightContrast, --Library.Theme.Outline,
+                            Visible = true,
+                            Filled = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local InternalTopline = Utility.AddDrawing("Square", {
+                            Size = Vector2.new(InternalOutline.Size.X, 1),
+                            Position = Vector2.new(InternalOutline.Position.X, InternalOutline.Position.Y),
+                            Thickness = 0,
+                            Color = Library.Theme.Accent[1],
+                            Visible = true,
+                            Filled = true,
+                            ZIndex = 3
+                        })
+                        --
+                        Utility.AddConnection(Library.Communication.Event, function(Type, Color)
+                            if Type == "Accent" then
+                                InternalTopline.Color = Color
+                            end
+                        end)
+                        --
+                        local InternalTitle = Utility.AddDrawing("Text", {
+                            Text = ToggleTitle.Text,
+                            Position = Vector2.new(InternalOutline.Position.X + 8, InternalOutline.Position.Y + 6),
+                            Center = false,
+                            Outline = false,
+                            Font = Library.Theme.Font,
+                            Size = Library.Theme.TextSize,
+                            Color = Library.Theme.Text,
+                            Visible = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local InternalBaseInline = Utility.AddDrawing("Square", {
+                            Position = Vector2.new(InternalOutline.Position.X + 8, InternalOutline.Position.Y + 25),
+                            Size = Vector2.new(192, 192),
+                            Thickness = 0,
+                            Color = Library.Theme.Inline,
+                            Visible = true,
+                            Filled = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local InternalBase = Utility.AddDrawing("Square", {
+                            Size = Vector2.new(192 - 4, 192 - 4),
+                            Position = Vector2.new(InternalBaseInline.Position.X + 2, InternalBaseInline.Position.Y + 2),
+                            Thickness = 0,
+                            Color = Options.Color, --Library.Theme.Outline,
+                            Visible = true,
+                            Filled = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local InternalSaturation = Utility.AddDrawing("Image", {
+                            Size = Vector2.new(196 - 2, 196 - 2),
+                            Position = Vector2.new(InternalOutline.Position.X + 8 + 1, InternalOutline.Position.Y + 25 + 1),
+                            Data = Library.Theme.Saturation,
+                            Transparency = 1,
+                            Visible = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local InternalHueInline = Utility.AddDrawing("Square", {
+                            Position = Vector2.new(InternalOutline.Position.X + InternalBase.Size.X + 14, InternalOutline.Position.Y + 26),
+                            Size = Vector2.new(16, 196),
+                            Thickness = 0,
+                            Color = Library.Theme.Inline,
+                            Visible = true,
+                            Filled = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local InternalHue = Utility.AddDrawing("Image", {
+                            Size = Vector2.new(InternalHueInline.Size.X - 2, InternalHueInline.Size.Y - 2),
+                            Position = Vector2.new(InternalHueInline.Position.X + 1, InternalHueInline.Position.Y + 1),
+                            Data = Library.Theme.Hue,
+                            Transparency = 1,
+                            Visible = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local InternalOutlineHuePicker = Utility.AddDrawing("Square", {
+                            Position = Vector2.new(InternalOutline.Position.X + InternalBase.Size.X + 12, InternalOutline.Position.Y + 26),
+                            Size = Vector2.new(InternalHueInline.Size.X + 2, 6),
+                            Thickness = 2,
+                            Color = Library.Theme.Outline,
+                            Visible = true,
+                            Filled = false,
+                            ZIndex = 3
+                        })
+                        --
+                        local InternalHuePicker = Utility.AddDrawing("Square", {
+                            Position = Vector2.new(InternalOutlineHuePicker.Position.X + 1, InternalOutlineHuePicker.Position.Y + 1),
+                            Size = Vector2.new(InternalOutlineHuePicker.Size.X - 2, InternalOutlineHuePicker.Size.Y - 2),
+                            Thickness = 2,
+                            Color = Library.Theme.Text,
+                            Visible = true,
+                            Filled = false,
+                            ZIndex = 3
+                        })
+                        --
+                        local Cursor = Utility.AddDrawing("Image", {
+                            Size = Vector2.new(6, 6),
+                            Data = Library.Theme.SaturationCursor,
+                            Transparency = 1,
+                            Visible = true,
+                            ZIndex = 6
+                        })
+                        --
+                        local InternalInlineHex = Utility.AddDrawing("Square", {
+                            Size = Vector2.new(80 - 2, 18 - 2),
+                            Position = Vector2.new(InternalOutline.Position.X + 8 + 1, InternalOutline.Position.Y + InternalSaturation.Size.Y + 30 + 1),
+                            Thickness = 0,
+                            Color = Library.Theme.Inline,
+                            Visible = true,
+                            Filled = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local InternalOutlineHex = Utility.AddDrawing("Square", {
+                            Size = Vector2.new(InternalInlineHex.Size.X - 2, InternalInlineHex.Size.Y - 2),
+                            Position = Vector2.new(InternalInlineHex.Position.X + 1, InternalInlineHex.Position.Y + 1),
+                            Thickness = 0,
+                            Color = Library.Theme.LightContrast, --Library.Theme.Outline,
+                            Visible = true,
+                            Filled = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local InternalHex = Utility.AddDrawing("Text", {
+                            Text = ("#%s"):format(tostring(Colorpicker.HexColor)),
+                            Position = Vector2.new(InternalOutlineHex.Position.X + (InternalOutlineHex.Size.X / 2), InternalOutlineHex.Position.Y),
+                            Center = true,
+                            Outline = false,
+                            Font = Library.Theme.Font,
+                            Size = Library.Theme.TextSize,
+                            Color = Library.Theme.Text,
+                            Visible = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local InternalInlineRGB = Utility.AddDrawing("Square", {
+                            Size = Vector2.new(130 - 2, 18 - 2),
+                            Position = Vector2.new(InternalOutline.Position.X + 90 + 1, InternalOutline.Position.Y + InternalSaturation.Size.Y + 30 + 1),
+                            Thickness = 0,
+                            Color = Library.Theme.Inline,
+                            Visible = true,
+                            Filled = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local InternalOutlineRGB = Utility.AddDrawing("Square", {
+                            Size = Vector2.new(InternalInlineRGB.Size.X - 2, InternalInlineRGB.Size.Y - 2),
+                            Position = Vector2.new(InternalInlineRGB.Position.X + 1, InternalInlineRGB.Position.Y + 1),
+                            Thickness = 0,
+                            Color = Library.Theme.LightContrast, --Library.Theme.Outline,
+                            Visible = true,
+                            Filled = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local InternalRGB = Utility.AddDrawing("Text", {
+                            Text = ("%s, %s, %s"):format(math.floor(Colorpicker.Color.R * 255), math.floor(Colorpicker.Color.G * 255), math.floor(Colorpicker.Color.B * 255)),
+                            Position = Vector2.new(InternalOutlineRGB.Position.X + (InternalOutlineRGB.Size.X / 2), InternalOutlineRGB.Position.Y),
+                            Center = true,
+                            Outline = false,
+                            Font = Library.Theme.Font,
+                            Size = Library.Theme.TextSize,
+                            Color = Library.Theme.Text,
+                            Visible = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local InternalInlineRainbow = Utility.AddDrawing("Square", {
+                            Size = Vector2.new(100 - 2, 18 - 2),
+                            Position = Vector2.new((InternalOutline.Position.X + InternalOutline.Size.X) - 100 - 2 + 1, InternalOutline.Position.Y + 4 + 1),
+                            Thickness = 0,
+                            Color = Library.Theme.Inline,
+                            Visible = true,
+                            Filled = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local InternalOutlineRainbow = Utility.AddDrawing("Square", {
+                            Size = Vector2.new(InternalInlineRainbow.Size.X - 2, InternalInlineRainbow.Size.Y - 2),
+                            Position = Vector2.new(InternalInlineRainbow.Position.X + 1, InternalInlineRainbow.Position.Y + 1),
+                            Thickness = 0,
+                            Color = Library.Theme.LightContrast, --Library.Theme.Outline,
+                            Visible = true,
+                            Filled = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local InternalRainbow = Utility.AddDrawing("Text", {
+                            Text = "Rainbow",
+                            Position = Vector2.new(InternalOutlineRainbow.Position.X + (InternalOutlineRainbow.Size.X / 2), InternalOutlineRainbow.Position.Y),
+                            Center = true,
+                            Outline = false,
+                            Font = Library.Theme.Font,
+                            Size = Library.Theme.TextSize,
+                            Color = Library.Theme.Text,
+                            Visible = true,
+                            ZIndex = 3
+                        })
+                        --
+                        function Colorpicker:Drop(State)
+                            InternalInline.Visible = State
+                            InternalOutline.Visible = State
+                            InternalTitle.Visible = State
+                            InternalBaseInline.Visible = State
+                            InternalBase.Visible = State
+                            InternalSaturation.Visible = State
+                            InternalHueInline.Visible = State
+                            InternalHue.Visible = State
+                            InternalOutlineHex.Visible = State
+                            InternalInlineHex.Visible = State
+                            InternalHex.Visible = State
+                            InternalInlineRGB.Visible = State
+                            InternalOutlineRGB.Visible = State
+                            InternalRGB.Visible = State
+                            InternalInlineRainbow.Visible = State
+                            InternalOutlineRainbow.Visible = State
+                            InternalRainbow.Visible = State
+                            InternalTopline.Visible = State
+                            Cursor.Visible = State
+                            InternalOutlineHuePicker.Visible = State
+                            InternalHuePicker.Visible = State
+                            Tab.Dropdowns[Side][ToggleTitle.Text] = State
+                        end
+                        --
+                        Utility.AddConnection(Library.Communication.Event, function(Type, Color)
+                            if Type == "Accent" then
+                                
+                            elseif Type == "LightContrast" then
+                                
+                            elseif Type == "Text" then
+                                InternalTitle.Color = Color
+                            elseif Type == "Inline" then
+                                InternalInline.Color = Color
+                                InternalBaseInline.Color = Color
+                                InternalHueInline.Color = Color
+                                InternalInlineHex.Color = Color
+                            elseif Type == "Outline" then
+                                InternalOutline.Color = Color
+                                InternalOutlineHex.Color = Color
+                                InternalInline.Color = Color
+                            end
+                        end)
+                        --
+                        Colorpicker.Offsets.X = InternalBase.Position.X
+                        Colorpicker.Offsets.Y = InternalBase.Position.Y
+                        --
+                        function Colorpicker:SetHue(Options)
+                            local Percent = Options.Percent or Options.Value
+        
+                            Colorpicker.Colors.HSV[1] = Options.Value
+
+                            local HSVColor = Color3.fromHSV(Colorpicker.Colors.HSV[1], Colorpicker.Colors.HSV[2], Colorpicker.Colors.HSV[3])
+                            
+                            InternalOutlineHuePicker.Position = Vector2.new(InternalOutline.Position.X + InternalBase.Size.X + 12, InternalHue.Position.Y + (InternalHue.Size.Y * Percent) - 4)
+                            InternalHuePicker.Position = Vector2.new(InternalOutlineHuePicker.Position.X + 1, InternalOutlineHuePicker.Position.Y + 1)
+
+                            InternalBase.Color = Color3.fromHSV(Colorpicker.Colors.HSV[1], 1, 1)
+
+                            InternalHex.Text = ("#%s"):format(tostring(HSVColor:ToHex()))
+                            
+                            local CalculateRGB = Color3.fromRGB(math.floor((HSVColor.R * 255)), math.floor((HSVColor.G * 255)), math.floor((HSVColor.B * 255)))
+                            InternalRGB.Text = ("%s, %s, %s"):format(math.floor(CalculateRGB.R * 255), math.floor(CalculateRGB.G * 255), math.floor(CalculateRGB.B * 255))
+
+                            ColorpickerBase.Color = HSVColor
+
+                            if not Options.Visual then
+                                Library.Flags[Colorpicker.Flag] = HSVColor
+                                Colorpicker.Callback(HSVColor)
+                            end
+                        end
+                        --
+                        function Colorpicker:RefreshHue()
+                            local PercentHue = math.clamp(((Mouse.Y + 36) - InternalHue.Position.Y) / (InternalHue.Size.Y), 0, 1)
+                            local ValueHue = math.floor((0 + (1 - 0) * PercentHue) * Colorpicker.Decimals) / Colorpicker.Decimals
+                            ValueHue = math.clamp(ValueHue, 0, 1)
+                            self:SetHue({
+                                Value = ValueHue, 
+                                Percent = PercentHue
+                            })
+                        end
+                        --
+                        function Colorpicker:SetSaturationX(Options)
+                            local PercentX = Options.Percent or Options.Value
+
+                            local HSVColor = Color3.fromHSV(Colorpicker.Colors.HSV[1], Colorpicker.Colors.HSV[2], Colorpicker.Colors.HSV[3])
+                            Colorpicker.Colors.HSV[2] = Options.Value
+
+                            Cursor.Position = Vector2.new(InternalBase.Position.X + (InternalBase.Size.X * PercentX) - 4, Colorpicker.Offsets.Y)
+                            Colorpicker.Offsets.X = Cursor.Position.X
+
+                            InternalHex.Text = ("#%s"):format(tostring(HSVColor:ToHex()))
+
+                            local CalculateRGB = Color3.fromRGB(math.floor((HSVColor.R * 255)), math.floor((HSVColor.G * 255)), math.floor((HSVColor.B * 255)))
+                            InternalRGB.Text = ("%s, %s, %s"):format(math.floor(CalculateRGB.R * 255), math.floor(CalculateRGB.G * 255), math.floor(CalculateRGB.B * 255))
+
+                            ColorpickerBase.Color = HSVColor
+
+                            if not Options.Visual then
+                                Library.Flags[Colorpicker.Flag] = HSVColor
+                                Colorpicker.Callback(HSVColor)
+                            end
+                        end
+                        --
+                        function Colorpicker:SetSaturationY(Options)
+                            local PercentY = Options.Percent or 1 - Options.Value
+
+                            local HSVColor = Color3.fromHSV(Colorpicker.Colors.HSV[1], Colorpicker.Colors.HSV[2], Colorpicker.Colors.HSV[3])
+                            Colorpicker.Colors.HSV[3] = Options.Value
+        
+                            Cursor.Position = Vector2.new(Colorpicker.Offsets.X, InternalBase.Position.Y + (InternalBase.Size.Y * PercentY) - 4)
+                            Colorpicker.Offsets.Y = Cursor.Position.Y
+
+                            InternalHex.Text = ("#%s"):format(tostring(HSVColor:ToHex()))
+
+                            local CalculateRGB = Color3.fromRGB(math.floor((HSVColor.R * 255)), math.floor((HSVColor.G * 255)), math.floor((HSVColor.B * 255)))
+                            InternalRGB.Text = ("%s, %s, %s"):format(math.floor(CalculateRGB.R * 255), math.floor(CalculateRGB.G * 255), math.floor(CalculateRGB.B * 255))
+
+                            ColorpickerBase.Color = HSVColor
+
+                            if not Options.Visual then
+                                Library.Flags[Colorpicker.Flag] = HSVColor
+                                Colorpicker.Callback(HSVColor)
+                            end
+                        end
+                        --
+                        function Colorpicker:RefreshSaturation()
+                            local PercentX = math.clamp((Mouse.X - InternalSaturation.Position.X) / (InternalSaturation.Size.X), 0, 1)
+                            local ValueX = math.floor((1 * PercentX) * Colorpicker.Decimals) / Colorpicker.Decimals
+                            ValueX = math.clamp(ValueX, 0, 1)
+                            self:SetSaturationX({
+                                Value = ValueX, 
+                                Percent = PercentX
+                            })
+                            --
+                            local PercentY = math.clamp(((Mouse.Y + 36) - InternalSaturation.Position.Y) / (InternalSaturation.Size.Y), 0, 1)
+                            local ValueY = 1 - math.floor((1 * PercentY) * Colorpicker.Decimals) / Colorpicker.Decimals
+                            ValueY = math.clamp(ValueY, 0, 1)
+                            self:SetSaturationY({
+                                Value = ValueY, 
+                                Percent = PercentY
+                            })
+                        end
+                        --
+                        Utility.AddConnection(UserInput.InputEnded, function(Input, Useless)
+                            if Useless then
+                                return
+                            end
+                            for Index, Value in pairs(Tab.Dropdowns[Side]) do
+                                if Index ~= ToggleTitle.Text and Value then
+                                    return
+                                end
+                            end
+                            if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+                                Colorpicker.HueDragging = false
+                                Colorpicker.SaturationDragging = false
+                            end
+                        end)
+        
+                        Utility.AddConnection(UserInput.InputChanged, function(Input, Useless)
+                            if Useless then
+                                return
+                            end
+                            if Input.UserInputType == Enum.UserInputType.MouseMovement then
+                                for Index, Value in pairs(Tab.Dropdowns[Side]) do
+                                    if Index ~= ToggleTitle.Text and Value then
+                                        return
+                                    end
+                                end
+                                if Colorpicker.HueDragging then
+                                    Colorpicker:RefreshHue()
+                                elseif Colorpicker.SaturationDragging then
+                                    Colorpicker:RefreshSaturation()
+                                end
+                            end
+                        end)
+                        --
+                        Utility.AddConnection(UserInput.InputBegan, function(Input, Useless)
+                            if Useless then
+                                return
+                            end
+                            if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+                                for Index, Value in pairs(Tab.Dropdowns[Side]) do
+                                    if Index ~= ToggleTitle.Text and Value then
+                                        return
+                                    end
+                                end
+                                if Utility.OnMouse(ColorpickerInline) then
+                                    Colorpicker.Dropped = not Colorpicker.Dropped
+                                    Tab.Dropdowns[Side][ToggleTitle.Text] = Colorpicker.Dropped
+                                    Colorpicker:Drop(Colorpicker.Dropped)
+                                elseif Utility.OnMouse(InternalSaturation) then
+                                    Colorpicker:RefreshSaturation()
+                                    Colorpicker.SaturationDragging = true
+                                elseif Utility.OnMouse(InternalHue) then
+                                    Colorpicker:RefreshHue()
+                                    Colorpicker.HueDragging = true
+                                elseif Utility.OnMouse(InternalInlineRainbow) then
+                                    Colorpicker.Rainbow = not Colorpicker.Rainbow
+                                    InternalRainbow.Color = Colorpicker.Rainbow and Library.Theme.Accent[1] or Library.Theme.Text
+                                    if not Colorpicker.Rainbow then
+                                        Colorpicker:SetHue({Value = Colorpicker.Colors.HSV[1]})
+                                        Colorpicker:SetSaturationX({Value = Colorpicker.Colors.HSV[2]})
+                                        Colorpicker:SetSaturationY({Value = Colorpicker.Colors.HSV[3]})
+                                    end
+                                else
+                                    Colorpicker.Dropped = false
+                                    Tab.Dropdowns[Side][ToggleTitle.Text] = Colorpicker.Dropped
+                                    Colorpicker:Drop(Colorpicker.Dropped)
+                                end
+                            end
+                        end)
+                        --
+                        Utility.AddConnection(RunService.RenderStepped, function(Input, Useless)
+                            if Colorpicker.Rainbow then
+                                -- Colorpicker:SetHue({Value = tick() % 2 / 2, Visual = true})
+                                -- Colorpicker:SetSaturationX({Value = 0.5, Visual = true})
+                                -- Colorpicker:SetSaturationY({Value = 1, Visual = true})
+                                Library.Flags[Colorpicker.Flag] = Color3.fromHSV(tick() % 2 / 2, 0.5, 1)
+                                Colorpicker.Callback(Color3.fromHSV(tick() % 2 / 2, 0.5, 1))
+                            end
+                        end)
+                        --
+                        Colorpicker:SetHue({Value = Colorpicker.Colors.HSV[1]})
+                        Colorpicker:SetSaturationX({Value = Colorpicker.Colors.HSV[2]})
+                        Colorpicker:SetSaturationY({Value = Colorpicker.Colors.HSV[3]})
+                        --
+                        Tab["Render"][#Tab["Render"] + 1] = ColorpickerInline
+                        Tab["Render"][#Tab["Render"] + 1] = ColorpickerOutline
+                        Tab["Render"][#Tab["Render"] + 1] = ColorpickerBase
+                        Tab["Render"][#Tab["Render"] + 1] = ColorpickerGradient
+                        --
+                        Colorpicker:Drop(false)
+                        --
+                        return Colorpicker
+                    end
+                    --
+                    function Toggle:Keybind(Options)
+                        local Keybind = {
+                            Axis = Section.ContentAxis,
+                            Title = Options.Title or "LOL",
+                            EnumType = Options.Key.EnumType == Enum.KeyCode and "KeyCode" or "UserInputType",
+                            Key = Options.Key or Enum.UserInputType.MouseButton2,
+                            StateType = Options.StateType or "Hold",
+                            State = false,
+                            Shorten = "",
+                            Binding = false,
+                            Dropped = false,
+                            Callback = typeof(Options.Callback) == "function" and Options.Callback or function() end,
+                            ShowRender = "",
+                            AddN = false
+                        }
+                        --
+                        Options.Flag = Options.Flag or "AWGWJIjgAWJIGIJAWG"
+                        Library.Flags[Options.Flag] = Keybind.State
+                        --
+                        if Keybind.StateType == "Always" then
+                            Keybind.Callback(Keybind.State, Keybind.Key)
+                            Library.Flags[Options.Flag] = true
+                        end
+                        --
+                        Keybind.Shorten = Library.Keys.Shortened[Keybind.Key.Name] or Keybind.Key.Name
+                        --
+                        Keybind.ShowRender = ("[%s] %s"):format(Keybind.Shorten, Options.Title)
+                        --
+                        local KeybindInline = Utility.AddDrawing("Square", {
+                            Position = Vector2.new(SectionInline.Position.X + SectionInline.Size.X - 40 - 6, SectionInline.Position.Y + Keybind.Axis + 2),
+                            Size = Vector2.new(40, 14),
+                            Thickness = 0,
+                            Color = Library.Theme.Inline,
+                            Visible = true,
+                            Filled = true
+                        })
+                        --
+                        local KeybindOutline = Utility.AddDrawing("Square", {
+                            Size = Vector2.new(KeybindInline.Size.X - 2, KeybindInline.Size.Y - 2),
+                            Position = Vector2.new(KeybindInline.Position.X + 1, KeybindInline.Position.Y + 1),
+                            Thickness = 0,
+                            Color = Library.Theme.LightContrast, --Library.Theme.Outline,
+                            Visible = true,
+                            Filled = true
+                        })
+                        --
+                        local KeybindGradient = Utility.AddDrawing("Image", {
+                            Size = Vector2.new(KeybindInline.Size.X - 2, KeybindInline.Size.Y - 2),
+                            Position = Vector2.new(KeybindInline.Position.X + 1, KeybindInline.Position.Y + 1),
+                            Data = Library.Theme.Gradient,
+                            Transparency = 1,
+                            Visible = true
+                        })
+                        --
+                        local KeybindValue = Utility.AddDrawing("Text", {
+                            Text = Keybind.Shorten,
+                            Position = Vector2.new(KeybindInline.Position.X + (KeybindInline.Size.X / 2), KeybindInline.Position.Y),
+                            Center = true,
+                            Outline = false,
+                            Font = Library.Theme.Font,
+                            Size = Library.Theme.TextSize,
+                            Color = Library.Theme.Text,
+                            Visible = true,
+                            ZIndex = 2
+                        })
+                        --
+                        local KeybindHoldInline = Utility.AddDrawing("Square", {
+                            Position = Vector2.new(SectionInline.Position.X + SectionInline.Size.X + 2 - 6, SectionInline.Position.Y + Keybind.Axis + 2),
+                            Size = Vector2.new(60, 16),
+                            Thickness = 0,
+                            Color = Library.Theme.Inline,
+                            Visible = true,
+                            Filled = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local KeybindHoldOutline = Utility.AddDrawing("Square", {
+                            Size = Vector2.new(KeybindHoldInline.Size.X - 2, KeybindHoldInline.Size.Y - 2),
+                            Position = Vector2.new(KeybindHoldInline.Position.X + 1, KeybindHoldInline.Position.Y + 1),
+                            Thickness = 0,
+                            Color = Library.Theme.LightContrast, --Library.Theme.Outline,
+                            Visible = true,
+                            Filled = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local KeybindHoldGradient = Utility.AddDrawing("Image", {
+                            Size = Vector2.new(KeybindHoldInline.Size.X - 2, KeybindHoldInline.Size.Y - 2),
+                            Position = Vector2.new(KeybindHoldInline.Position.X + 1, KeybindHoldInline.Position.Y + 1),
+                            Data = Library.Theme.Gradient,
+                            Transparency = 1,
+                            Visible = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local KeybindHoldValue = Utility.AddDrawing("Text", {
+                            Text = "Hold",
+                            Position = Vector2.new(KeybindHoldInline.Position.X + (KeybindHoldInline.Size.X / 2), KeybindHoldInline.Position.Y),
+                            Center = true,
+                            Outline = false,
+                            Font = Library.Theme.Font,
+                            Size = Library.Theme.TextSize,
+                            Color = Library.Theme.Text,
+                            Visible = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local KeybindToggleInline = Utility.AddDrawing("Square", {
+                            Position = Vector2.new(SectionInline.Position.X + SectionInline.Size.X + 2 - 6, SectionInline.Position.Y + Keybind.Axis + 18),
+                            Size = Vector2.new(60, 16),
+                            Thickness = 0,
+                            Color = Library.Theme.Inline,
+                            Visible = true,
+                            Filled = true
+                        })
+                        --
+                        local KeybindToggleOutline = Utility.AddDrawing("Square", {
+                            Size = Vector2.new(KeybindToggleInline.Size.X - 2, KeybindToggleInline.Size.Y - 2),
+                            Position = Vector2.new(KeybindToggleInline.Position.X + 1, KeybindToggleInline.Position.Y + 1),
+                            Thickness = 0,
+                            Color = Library.Theme.LightContrast, --Library.Theme.Outline,
+                            Visible = true,
+                            Filled = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local KeybindToggleGradient = Utility.AddDrawing("Image", {
+                            Size = Vector2.new(KeybindToggleInline.Size.X - 2, KeybindToggleInline.Size.Y - 2),
+                            Position = Vector2.new(KeybindToggleInline.Position.X + 1, KeybindToggleInline.Position.Y + 1),
+                            Data = Library.Theme.Gradient,
+                            Transparency = 1,
+                            Visible = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local KeybindToggleValue = Utility.AddDrawing("Text", {
+                            Text = "Toggle",
+                            Position = Vector2.new(KeybindToggleInline.Position.X + (KeybindToggleInline.Size.X / 2), KeybindToggleInline.Position.Y),
+                            Center = true,
+                            Outline = false,
+                            Font = Library.Theme.Font,
+                            Size = Library.Theme.TextSize,
+                            Color = Library.Theme.Text,
+                            Visible = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local KeybindAlwaysInline = Utility.AddDrawing("Square", {
+                            Position = Vector2.new(SectionInline.Position.X + SectionInline.Size.X + 2 - 6, SectionInline.Position.Y + Keybind.Axis + 34),
+                            Size = Vector2.new(60, 16),
+                            Thickness = 0,
+                            Color = Library.Theme.Inline,
+                            Visible = true,
+                            Filled = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local KeybindAlwaysOutline = Utility.AddDrawing("Square", {
+                            Size = Vector2.new(KeybindAlwaysInline.Size.X - 2, KeybindAlwaysInline.Size.Y - 2),
+                            Position = Vector2.new(KeybindAlwaysInline.Position.X + 1, KeybindAlwaysInline.Position.Y + 1),
+                            Thickness = 0,
+                            Color = Library.Theme.LightContrast, --Library.Theme.Outline,
+                            Visible = true,
+                            Filled = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local KeybindAlwaysGradient = Utility.AddDrawing("Image", {
+                            Size = Vector2.new(KeybindAlwaysInline.Size.X - 2, KeybindAlwaysInline.Size.Y - 2),
+                            Position = Vector2.new(KeybindAlwaysInline.Position.X + 1, KeybindAlwaysInline.Position.Y + 1),
+                            Data = Library.Theme.Gradient,
+                            Transparency = 1,
+                            Visible = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local KeybindAlwaysValue = Utility.AddDrawing("Text", {
+                            Text = "Always",
+                            Position = Vector2.new(KeybindAlwaysInline.Position.X + (KeybindAlwaysInline.Size.X / 2), KeybindAlwaysInline.Position.Y),
+                            Center = true,
+                            Outline = false,
+                            Font = Library.Theme.Font,
+                            Size = Library.Theme.TextSize,
+                            Color = Library.Theme.Text,
+                            Visible = true,
+                            ZIndex = 3
+                        })
+                        --
+                        function Keybind:Drop(State)
+                            KeybindHoldInline.Visible = State
+                            KeybindHoldOutline.Visible = State
+                            KeybindHoldGradient.Visible = State
+                            KeybindHoldValue.Visible = State
+    
+                            KeybindToggleInline.Visible = State
+                            KeybindToggleOutline.Visible = State
+                            KeybindToggleGradient.Visible = State
+                            KeybindToggleValue.Visible = State
+    
+                            KeybindAlwaysInline.Visible = State
+                            KeybindAlwaysOutline.Visible = State
+                            KeybindAlwaysGradient.Visible = State
+                            KeybindAlwaysValue.Visible = State
+                        end
+                        --
+                        function Keybind:SetStateType(State)
+                            if State == "Hold" then
+                                Keybind.StateType = "Hold"
+    
+                                KeybindAlwaysValue.Color = Library.Theme.Text
+                                KeybindToggleValue.Color = Library.Theme.Text
+                                KeybindHoldValue.Color = Library.Theme.Accent[1]
+                            elseif State == "Toggle" then
+                                Keybind.StateType = "Toggle"
+    
+                                KeybindAlwaysValue.Color = Library.Theme.Text
+                                KeybindToggleValue.Color = Library.Theme.Accent[1]
+                                KeybindHoldValue.Color = Library.Theme.Text
+                            else
+                                Keybind.StateType = "Always"
+    
+                                KeybindAlwaysValue.Color = Library.Theme.Accent[1]
+                                KeybindToggleValue.Color = Library.Theme.Text
+                                KeybindHoldValue.Color = Library.Theme.Text
+                            end
+                        end
+                        --
+                        Utility.AddConnection(UserInput.InputBegan, function(Input, Useless)
+                            if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+                                if Keybind.Binding then
+                                    Keybind.Binding = false
+                                    Keybind.Key = Enum.UserInputType.MouseButton1
+                                    Keybind.EnumType = "UserInputType"
+                                    local Old = Keybind.Shorten
+                                    Keybind.Shorten = Library.Keys.Shortened[Keybind.Key.Name] or Keybind.Key.Name
+                                    Window.BindList = string.gsub(Window.BindList, "\n%[" .. Old .. "%] " .. Options.Title, ("\n[%s] %s"):format(Keybind.Shorten, Options.Title))
+                                    KeybindValue.Text = Keybind.Binding and "[...]" or Keybind.Shorten
+                                end
+                                if Utility.OnMouse(KeybindHoldInline) then
+                                    Keybind:SetStateType("Hold")
+                                end
+                                if Utility.OnMouse(KeybindToggleInline) then
+                                    Keybind:SetStateType("Toggle")
+                                end
+                                if Utility.OnMouse(KeybindAlwaysInline) then
+                                    Keybind:SetStateType("Always")
+                                end
+                                if Utility.OnMouse(KeybindInline) then
+                                    for Index, Value in pairs(Tab.Dropdowns[Side]) do
+                                        if Value then
+                                            return
+                                        end
+                                    end
+                                    if Keybind.Binding then
+                                        Keybind.Binding = false
+                                        KeybindValue.Text = Keybind.Shorten
+                                        Keybind.ShowRender = ("[%s] %s"):format(Keybind.Shorten, Options.Title)
+                                    else
+                                        Keybind.Binding = true
+                                        KeybindValue.Text = Keybind.Binding and "[...]" or Keybind.Shorten
+                                    end
+                                else
+                                    if Utility.OnMouse(KeybindHoldInline) or Utility.OnMouse(KeybindToggleInline) or Utility.OnMouse(KeybindAlwaysInline) then
+                                        return
+                                    end
+                                    Keybind.Dropped = false
+                                    Keybind:Drop(Keybind.Dropped)
+                                    Tab.Dropdowns["Left"][ToggleTitle.Text] = Keybind.Dropped
+                                    Tab.Dropdowns["Right"][ToggleTitle.Text] = Keybind.Dropped
+                                end
+                            elseif Input.UserInputType == Enum.UserInputType.Keyboard then
+                                if Keybind.Binding then
+                                    Keybind.Binding = false
+                                    Keybind.Key = Input.KeyCode
+                                    Keybind.EnumType = "KeyCode"
+                                    local Old = Keybind.Shorten
+                                    Keybind.Shorten = Library.Keys.Shortened[Keybind.Key.Name] or Keybind.Key.Name
+                                    KeybindValue.Text = Keybind.Shorten
+                                    Window.BindList = string.gsub(Window.BindList, "\n%[" .. Old .. "%] " .. Options.Title, ("\n[%s] %s"):format(Keybind.Shorten, Options.Title))
+                                    Keybind.ShowRender = ("[%s] %s"):format(Keybind.Shorten, Options.Title)
+                                end
+                            elseif Input.UserInputType == Enum.UserInputType.MouseButton2 then
+                                if Keybind.Binding then
+                                    Keybind.Binding = false
+                                    Keybind.Key = Enum.UserInputType.MouseButton2
+                                    Keybind.EnumType = "UserInputType"
+                                    local Old = Keybind.Shorten
+                                    Keybind.Shorten = Library.Keys.Shortened[Keybind.Key.Name] or Keybind.Key.Name
+                                    KeybindValue.Text = Keybind.Shorten
+                                    Window.BindList = string.gsub(Window.BindList, "\n%[" .. Old .. "%] " .. Options.Title, ("\n[%s] %s"):format(Keybind.Shorten, Options.Title))
+                                    Keybind.ShowRender = ("[%s] %s"):format(Keybind.Shorten, Options.Title)
+                                end
+                                if Utility.OnMouse(KeybindInline) then
+                                    Keybind.Dropped = not Keybind.Dropped
+                                    Keybind:Drop(Keybind.Dropped)
+                                    Tab.Dropdowns["Left"][ToggleTitle.Text] = Keybind.Dropped
+                                    Tab.Dropdowns["Right"][ToggleTitle.Text] = Keybind.Dropped
+                                end
+                            end
+                        end)
+                        --
+                        Utility.AddConnection(UserInput.InputBegan, function(Input, Useless)
+                            if (Keybind.EnumType == "KeyCode" and Input.KeyCode == Keybind.Key) or (Keybind.EnumType == "UserInputType" and Input.UserInputType == Keybind.Key) then
+                                if Keybind.StateType ~= "Always" then
+                                    if Keybind.StateType == "Toggle" then
+                                        Keybind.State = not Keybind.State
+                                    elseif Keybind.StateType == "Hold" then
+                                        Keybind.State = true
+                                    end
+                                    if Keybind.State then
+                                        if not string.find(Window.BindList, "\n%[" .. Keybind.Shorten .. "%] " .. Options.Title) then
+                                            Window.BindList = Window.BindList .. "\n" .. Keybind.ShowRender
+                                        end
+                                    else
+                                        Keybind:RemoveFromKeyBindGui()
+                                    end
+                                    Keybind.Callback(Keybind.State, Keybind.Key)
+                                    Library.Flags[Options.Flag] = Keybind.State
+                                end
+                            end
+                        end)
+                        --
+                        Utility.AddConnection(RunService.Stepped, function(Input, Useless)
+                            if Keybind.StateType == "Always" then
+                                Keybind.State = true
+                                Keybind.Callback(Keybind.State, Keybind.Key)
+                                Library.Flags[Options.Flag] = Keybind.State
+                                if not string.find(Window.BindList, "\n%[" .. Keybind.Shorten .. "%] " .. Options.Title) then
+                                    Window.BindList = Window.BindList .. "\n" .. Keybind.ShowRender
+                                end
+                            end
+                        end)
+                        --
+                        Keybind:SetStateType(Keybind.StateType)
+                        --
+                        function Keybind:RemoveFromKeyBindGui()
+                            Window.BindList = string.gsub(Window.BindList, "\n%[" .. Keybind.Shorten .. "%] " .. Options.Title, "")
+                        end
+                        --
+                        Utility.AddConnection(UserInput.InputEnded, function(Input, Useless)
+                            if (Keybind.EnumType == "KeyCode" and Input.KeyCode == Keybind.Key) or (Keybind.EnumType == "UserInputType" and Input.UserInputType == Keybind.Key) then
+                                if Keybind.StateType ~= "Always" then
+                                    if Keybind.StateType == "Hold" then
+                                        Keybind.State = false
+                                        Keybind:RemoveFromKeyBindGui()
+                                        Keybind.Callback(Keybind.State, Keybind.Key)
+                                        Library.Flags[Options.Flag] = Keybind.State
+                                    end
+                                end
+                            end
+                        end)
+                        --
+                        Keybind:Drop(false)
+                        --
+                        Tab["Render"][#Tab["Render"] + 1] = KeybindTitle
+                        Tab["Render"][#Tab["Render"] + 1] = KeybindGradient
+                        Tab["Render"][#Tab["Render"] + 1] = KeybindInline
+                        Tab["Render"][#Tab["Render"] + 1] = KeybindOutline
+                        Tab["Render"][#Tab["Render"] + 1] = KeybindValue
+                        --
+                        return Keybind
+                    end
+                    --
+                    return Toggle
+                end
+                --
+                function Section:Slider(Options)
+                    local Slider = {
+                        TypeOf = "Slider",
+                        Default = Options.Default or 100,
+                        Decimals = Options.Decimals or 1,
+                        Axis = Section.ContentAxis,
+                        Max = Options.Max or 200,
+                        Min = Options.Min or 0,
+                        Dragging = false,
+                        Symbol = Options.Symbol or "",
+                        Current = Options.Default,
+                        Callback = typeof(Options.Callback) == "function" and Options.Callback or function() end
+                    }
+                    --
+                    Options.Flag = Options.Flag or "AWGWJIjgAWJIGIJAWG"
+                    Library.Flags[Options.Flag] = Slider.Default
+                    --
+                    if Slider.Min > Slider.Max then 
+                        Slider.Min = Slider.Max - 1 
+                    end
+                    if Slider.Default < Slider.Min then 
+                        Slider.Default = Slider.Min 
+                    end
+                    if Slider.Default > Slider.Max then 
+                        Slider.Default = Slider.Max 
+                    end
+                    --
+                    local SliderInline = Utility.AddDrawing("Square", {
+                        Position = Vector2.new(SectionInline.Position.X + 8, SectionInline.Position.Y + 23 + Slider.Axis + 15),
+                        Size = Vector2.new(SectionOutline.Size.X - 12, 13),
+                        Thickness = 0,
+                        Color = Library.Theme.Inline,
+                        Visible = true,
+                        Filled = true
+                    })
+                    --
+                    local SliderOutline = Utility.AddDrawing("Square", {
+                        Size = Vector2.new(SliderInline.Size.X - 2, SliderInline.Size.Y - 2),
+                        Position = Vector2.new(SliderInline.Position.X + 1, SliderInline.Position.Y + 1),
+                        Thickness = 0,
+                        Color = Library.Theme.LightContrast, --Library.Theme.Outline,
+                        Visible = true,
+                        Filled = true
+                    })
+                    --
+                    local SliderBar = Utility.AddDrawing("Square", {
+                        Size = Vector2.new(SliderOutline.Size.X / 2, SliderOutline.Size.Y),
+                        Position = Vector2.new(SliderOutline.Position.X, SliderOutline.Position.Y),
+                        Thickness = 0,
+                        Transparency = 0.75,
+                        Color = Library.Theme.Accent[1], --Library.Theme.Outline,
+                        Visible = true,
+                        Filled = true
+                    })
+                    --
+                    local SliderGradient = Utility.AddDrawing("Image", {
+                        Size = Vector2.new(SliderInline.Size.X - 2, SliderInline.Size.Y - 2),
+                        Position = Vector2.new(SliderInline.Position.X + 1, SliderInline.Position.Y + 1),
+                        Data = Library.Theme.Gradient,
+                        Transparency = 0.5,
+                        Visible = false
+                    })
+                    --
+                    local SliderTitle = Utility.AddDrawing("Text", {
+                        Text = Options.Title,
+                        Position = Vector2.new(SliderInline.Position.X, SliderInline.Position.Y - 17),
+                        Center = false,
+                        Outline = false,
+                        Font = Library.Theme.Font,
+                        Size = Library.Theme.TextSize,
+                        Color = Library.Theme.Text,
+                        Visible = true,
+                        ZIndex = 2
+                    })
+                    --
+                    local SliderValue = Utility.AddDrawing("Text", {
+                        Position = Vector2.new(SliderInline.Position.X + (SliderInline.Size.X / 2), SliderInline.Position.Y),
+                        Center = true,
+                        Outline = false,
+                        Font = Library.Theme.Font,
+                        Size = Library.Theme.TextSize,
+                        Color = Library.Theme.Text,
+                        Visible = true,
+                        ZIndex = 2
+                    })
+                    --
+                    SliderValue.Outline = true
+                    --
+                    Utility.AddConnection(Library.Communication.Event, function(Type, Color)
+                        if Type == "Accent" then
+                            SliderBar.Color = Color
+                        elseif Type == "LightContrast" then
+                            SliderOutline.Color = Color
+                        elseif Type == "Text" then
+                            SliderTitle.Color = Color
+                            SliderValue.Color = Color
+                        elseif Type == "Inline" then
+                            SliderInline.Color = Color
+                        end
+                    end)
+                    --
+                    function Slider:SetText(Text)
+                        SliderText.Text = Text
+                    end
+    
+                    function Slider:Set(GetValue, ConvertToMin)
+                        if GetValue > Slider.Max then return end
+                        if GetValue < Slider.Min then return end
+                        
+                        local Bracket = 1 / Slider.Decimals
+                        local DecimalsCon = math.clamp(math.round(GetValue * Bracket) / Bracket, Slider.Min, Slider.Max)
+                        local Percent = 1 - ((Slider.Max - DecimalsCon) / (Slider.Max - Slider.Min))
+                        SliderBar.Size = Vector2.new(SliderOutline.Size.X * Percent, SliderOutline.Size.Y)
+                        SliderValue.Text = ("%s%s/%s%s"):format(DecimalsCon, Slider.Symbol, Slider.Max, Slider.Symbol)
+                        Library.Flags[Options.Flag] = GetValue
+                        Slider.Callback(GetValue)
+                    end
+    
+                    function Slider:SetMax(NewMax)
+                        if NewMax < Slider.Current then Slider.Current = NewMax end
+                        if Slider.Current < Slider.Min then return end
+    
+                        Slider.Max = NewMax
+                        local DecimalsCon = math.clamp(math.round(Slider.Current * Slider.Decimals) / Slider.Decimals, Slider.Min, Slider.Max)
+                        local Percent = 1 - ((Slider.Max - DecimalsCon) / (Slider.Max - Slider.Min))
+                        SliderBar.Size = Vector2.new(SliderOutline.Size.X * Percent, SliderOutline.Size.Y)
+                        SliderValue.Text = ("%s%s/%s%s"):format(DecimalsCon, Slider.Symbol, Slider.Max, Slider.Symbol)
+                        Library.Flags[Options.Flag] = Slider.Current
+                        Slider.Callback(Slider.Current)
+                    end
+    
+                    function Slider:SetMin(NewMin)
+                        Slider.Min = NewMin
+                        if Slider.Current > Slider.Max then return end
+                        if Slider.Current < Slider.Min then return end
+    
+                        local DecimalsCon = math.clamp(math.round(Slider.Current * Slider.Decimals) / Slider.Decimals, Slider.Min, Slider.Max)
+                        local Percent = 1 - ((Slider.Max - DecimalsCon) / (Slider.Max - Slider.Min))
+                        SliderBar.Size = Vector2.new(SliderOutline.Size.X * Percent, SliderOutline.Size.Y)
+                        SliderValue.Text = ("%s%s/%s%s"):format(DecimalsCon, Slider.Symbol, Slider.Max, Slider.Symbol)
+                        Library.Flags[Options.Flag] = Slider.Current
+                        Slider.Callback(Slider.Current)
+                    end
+    
+                    function Slider:Refresh()
+                        local Percent = math.clamp((Mouse.X - SliderOutline.Position.X) / (SliderOutline.Size.X), 0, 1)
+                        local Bracket = 1 / Slider.Decimals
+                        local Value = math.floor((Slider.Min + (Slider.Max - Slider.Min) * Percent) * Bracket) / Bracket
+                        Value = math.clamp(Value, Slider.Min, Slider.Max)
+                        Slider:Set(Value)
+                    end
+    
+                    Slider:Set(Slider.Default)
+                
+                    --
+                    Utility.AddConnection(UserInput.InputBegan, function(Input, Useless)
+                        
+                        for Index, Value in pairs(Tab.Dropdowns[Side]) do
+                            if Value then
+                                return
+                            end
+                        end
+                        if Input.UserInputType == Enum.UserInputType.MouseButton1 and Utility.OnMouse(SliderOutline) then
+                            Slider:Refresh()
+                            Slider.Dragging = true
+                        end
+                    end)
+                    --
+                    Utility.AddConnection(UserInput.InputEnded, function(Input, Useless)
+                        
+                        for Index, Value in pairs(Tab.Dropdowns[Side]) do
+                            if Value then
+                                return
+                            end
+                        end
+                        if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+                            Slider.Dragging = false
+                        end
+                    end)
+                    --
+                    Utility.AddConnection(UserInput.InputChanged, function(Input, Useless)
+                        if Utility.OnMouse(SliderInline) then
+                            SliderInline.Color = Library.Theme.Accent[1]
+                        else
+                            SliderInline.Color = Library.Theme.Inline
+                        end
+                        
+                        for Index, Value in pairs(Tab.Dropdowns[Side]) do
+                            if Value then
+                                return
+                            end
+                        end
+                        if Input.UserInputType == Enum.UserInputType.MouseMovement and Slider.Dragging then
+                            Slider:Refresh()
+                        end
+                    end)
+                    --
+                    Section.ContentAxis = Section.ContentAxis + SliderOutline.Size.Y + 24
+                    Tab.SectionAxis = {
+                        Side == "Left" and Tab.SectionAxis[1] + SliderOutline.Size.Y + 24 or Tab.SectionAxis[1], 
+                        Side == "Right" and Tab.SectionAxis[2] + SliderOutline.Size.Y + 24 or Tab.SectionAxis[2]
+                    }
+                    --
+                    self:UpdateSizeY(Section.ContentAxis + SliderOutline.Size.Y)
+                    --
+                    Tab["Render"][#Tab["Render"] + 1] = SliderInline
+                    Tab["Render"][#Tab["Render"] + 1] = SliderOutline
+                    Tab["Render"][#Tab["Render"] + 1] = SliderTitle
+                    Tab["Render"][#Tab["Render"] + 1] = SliderGradient
+                    Tab["Render"][#Tab["Render"] + 1] = SliderBar
+                    Tab["Render"][#Tab["Render"] + 1] = SliderValue
+                    --
+                    return Slider
+                end
+                --
+                function Section:Button(Options)
+                    local Button = {
+                        Title = Options.Title or "LMAO",
+                        Axis = Section.ContentAxis,
+                        Callback = typeof(Options.Callback) == "function" and Options.Callback or function() end
+                    }
+                    --
+                    local ButtonInline = Utility.AddDrawing("Square", {
+                        Position = Vector2.new(SectionInline.Position.X + 8, SectionInline.Position.Y + 24 + Button.Axis),
+                        Size = Vector2.new(SectionOutline.Size.X - 12, 18),
+                        Thickness = 0,
+                        Color = Library.Theme.Inline,
+                        Visible = true,
+                        Filled = true
+                    })
+                    --
+                    local ButtonOutline = Utility.AddDrawing("Square", {
+                        Size = Vector2.new(ButtonInline.Size.X - 2, ButtonInline.Size.Y - 2),
+                        Position = Vector2.new(ButtonInline.Position.X + 1, ButtonInline.Position.Y + 1),
+                        Thickness = 0,
+                        Color = Library.Theme.LightContrast, --Library.Theme.Outline,
+                        Visible = true,
+                        Filled = true
+                    })
+                    --
+                    local ButtonGradient = Utility.AddDrawing("Image", {
+                        Size = ButtonOutline.Size,
+                        Position = ButtonOutline.Position,
+                        Data = Library.Theme.Gradient,
+                        Transparency = 0.5,
+                        Visible = true
+                    })
+                    --
+                    local ButtonTitle = Utility.AddDrawing("Text", {
+                        Text = Options.Title,
+                        Position = Vector2.new(ButtonInline.Position.X + (ButtonInline.Size.X / 2), ButtonInline.Position.Y + 2),
+                        Center = true,
+                        Outline = false,
+                        Font = Library.Theme.Font,
+                        Size = Library.Theme.TextSize,
+                        Color = Library.Theme.Text,
+                        Visible = true,
+                        ZIndex = 2
+                    })
+                    --
+                    Utility.AddConnection(Library.Communication.Event, function(Type, Color)
+                        if Type == "LightContrast" then
+                            ButtonOutline.Color = Color
+                        elseif Type == "Text" then
+                            ButtonTitle.Color = Color
+                        elseif Type == "Inline" then
+                            ButtonInline.Color = Color
+                        end
+                    end)
+                    --
+                    Utility.AddConnection(UserInput.InputChanged, function(Input, Useless)
+                        if Utility.OnMouse(ButtonInline) then
+                            ButtonInline.Color = Library.Theme.Accent[1]
+                        else
+                            ButtonInline.Color = Library.Theme.Inline
+                        end
+                    end)
+                    --
+                    function Button:EmitEffect()
+                        ButtonOutline.Color = Library.Theme.LightContrast
+                        delay(0.1, function()
+                            pcall(function()
+                                ButtonOutline.Color = Library.Theme.DarkContrast
+                            end)
+                        end)
+                    end
+                    --
+                    Utility.AddConnection(UserInput.InputBegan, function(Input, Useless)
+                        
+                        if Input.UserInputType == Enum.UserInputType.MouseButton1 and Utility.OnMouse(ButtonOutline) then
+                            for Index, Value in pairs(Tab.Dropdowns[Side]) do
+                                if Value then
+                                    return
+                                end
+                            end
+                            Button:EmitEffect()
+                            Button.Callback()
+                        end
+                    end)
+                    --
+                    Section.ContentAxis = Section.ContentAxis + ButtonOutline.Size.Y + 6
+                    Tab.SectionAxis = {
+                        Side == "Left" and Tab.SectionAxis[1] + ButtonOutline.Size.Y + 6 or Tab.SectionAxis[1], 
+                        Side == "Right" and Tab.SectionAxis[2] + ButtonOutline.Size.Y + 6 or Tab.SectionAxis[2]
+                    }
+                    --
+                    self:UpdateSizeY(Section.ContentAxis + ButtonOutline.Size.Y)
+                    --
+                    Tab["Render"][#Tab["Render"] + 1] = ButtonInline
+                    Tab["Render"][#Tab["Render"] + 1] = ButtonGradient
+                    Tab["Render"][#Tab["Render"] + 1] = ButtonOutline
+                    Tab["Render"][#Tab["Render"] + 1] = ButtonTitle
+                    --
+                    return Button
+                end
+                --
+                function Section:Colorpicker(Options)
+                    local Colorpicker = {
+                        Axis = Section.ContentAxis,
+                        Color = Options.Color,
+                        HexColor = Options.Color:ToHex(),
+                        Dropped = false,
+                        Offsets = {
+                            X = 0,
+                            Y = 0
+                        },
+                        Colors = {
+                            HSV = {1, 1, 1}
+                        },
+                        SaturationDragging = false,
+                        HueDragging = false,
+                        Decimals = 50,
+                        Rainbow = false,
+                        Flag = Options.Flag,
+                        Title = Options.Title or "Color Picker",
+                        Callback = typeof(Options.Callback) == "function" and Options.Callback or function() end
+                    }
+                    --
+                    Library.Flags[Colorpicker.Flag] = Colorpicker.HexColor
+                    --
+                    local H, S, V = Colorpicker.Color:ToHSV()
+                    Colorpicker.Colors.HSV[1] = H
+                    Colorpicker.Colors.HSV[2] = S
+                    Colorpicker.Colors.HSV[3] = V
+                    --
+                    local ColorpickerTitle = Utility.AddDrawing("Text", {
+                        Text = Options.Title,
+                        Position = Vector2.new(SectionInline.Position.X + 8, SectionInline.Position.Y + 23 + Colorpicker.Axis),
+                        Center = false,
+                        Outline = false,
+                        Font = Library.Theme.Font,
+                        Size = Library.Theme.TextSize,
+                        Color = Library.Theme.Text,
+                        Visible = true,
+                        ZIndex = 2
+                    })
+                    --
+                    local ColorpickerInline = Utility.AddDrawing("Square", {
+                        Position = Vector2.new((SectionInline.Position.X + SectionInline.Size.X) - 38, SectionInline.Position.Y + 23 + Colorpicker.Axis),
+                        Size = Vector2.new(30, 12),
+                        Thickness = 0,
+                        Color = Library.Theme.Inline,
+                        Visible = true,
+                        Filled = true
+                    })
+                    --
+                    local ColorpickerOutline = Utility.AddDrawing("Square", {
+                        Size = Vector2.new(ColorpickerInline.Size.X - 2, ColorpickerInline.Size.Y - 2),
+                        Position = Vector2.new(ColorpickerInline.Position.X + 1, ColorpickerInline.Position.Y + 1),
+                        Thickness = 0,
+                        Color = Library.Theme.LightContrast, --Library.Theme.Outline,
+                        Visible = true,
+                        Filled = true
+                    })
+                    --
+                    local ColorpickerBase = Utility.AddDrawing("Square", {
+                        Size = Vector2.new(ColorpickerInline.Size.X - 2, ColorpickerInline.Size.Y - 2),
+                        Position = Vector2.new(ColorpickerInline.Position.X + 1, ColorpickerInline.Position.Y + 1),
+                        Thickness = 0,
+                        Color = Colorpicker.Color, --Library.Theme.Outline,
+                        Visible = true,
+                        Filled = true
+                    })
+                    --
+                    local ColorpickerGradient = Utility.AddDrawing("Image", {
+                        Size = Vector2.new(ColorpickerInline.Size.X - 2, ColorpickerInline.Size.Y - 2),
+                        Position = Vector2.new(ColorpickerInline.Position.X + 1, ColorpickerInline.Position.Y + 1),
+                        Data = Library.Theme.Gradient,
+                        Transparency = 0.5,
+                        Visible = true
+                    })
+                    --
+                    local InternalInline = Utility.AddDrawing("Square", {
+                        Position = Vector2.new((ColorpickerInline.Position.X - 225) + ColorpickerInline.Size.X, ColorpickerInline.Position.Y + 18),
+                        Size = Vector2.new(225, 250),
+                        Thickness = 0,
+                        Color = Library.Theme.Inline,
+                        Visible = true,
+                        Filled = true,
+                        ZIndex = 3
+                    })
+                    --
+                    local InternalOutline = Utility.AddDrawing("Square", {
+                        Size = Vector2.new(InternalInline.Size.X - 2, InternalInline.Size.Y - 2),
+                        Position = Vector2.new(InternalInline.Position.X + 1, InternalInline.Position.Y + 1),
+                        Thickness = 0,
+                        Color = Library.Theme.LightContrast, --Library.Theme.Outline,
+                        Visible = true,
+                        Filled = true,
+                        ZIndex = 3
+                    })
+                    --
+                    local InternalTopline = Utility.AddDrawing("Square", {
+                        Size = Vector2.new(InternalOutline.Size.X, 1),
+                        Position = Vector2.new(InternalOutline.Position.X, InternalOutline.Position.Y),
+                        Thickness = 0,
+                        Color = Library.Theme.Accent[1],
+                        Visible = true,
+                        Filled = true,
+                        ZIndex = 3
+                    })
+                    --
+                    Utility.AddConnection(Library.Communication.Event, function(Type, Color)
+                        if Type == "Accent" then
+                            InternalTopline.Color = Color
+                        end
+                    end)
+                    --
+                    local InternalTitle = Utility.AddDrawing("Text", {
+                        Text = Options.Title,
+                        Position = Vector2.new(InternalOutline.Position.X + 8, InternalOutline.Position.Y + 6),
+                        Center = false,
+                        Outline = false,
+                        Font = Library.Theme.Font,
+                        Size = Library.Theme.TextSize,
+                        Color = Library.Theme.Text,
+                        Visible = true,
+                        ZIndex = 3
+                    })
+                    --
+                    local InternalBaseInline = Utility.AddDrawing("Square", {
+                        Position = Vector2.new(InternalOutline.Position.X + 8, InternalOutline.Position.Y + 25),
+                        Size = Vector2.new(192, 192),
+                        Thickness = 0,
+                        Color = Library.Theme.Inline,
+                        Visible = true,
+                        Filled = true,
+                        ZIndex = 3
+                    })
+                    --
+                    local InternalBase = Utility.AddDrawing("Square", {
+                        Size = Vector2.new(192 - 4, 192 - 4),
+                        Position = Vector2.new(InternalBaseInline.Position.X + 2, InternalBaseInline.Position.Y + 2),
+                        Thickness = 0,
+                        Color = Options.Color, --Library.Theme.Outline,
+                        Visible = true,
+                        Filled = true,
+                        ZIndex = 3
+                    })
+                    --
+                    local InternalSaturation = Utility.AddDrawing("Image", {
+                        Size = Vector2.new(196 - 2, 196 - 2),
+                        Position = Vector2.new(InternalOutline.Position.X + 8 + 1, InternalOutline.Position.Y + 25 + 1),
+                        Data = Library.Theme.Saturation,
+                        Transparency = 1,
+                        Visible = true,
+                        ZIndex = 3
+                    })
+                    --
+                    local InternalHueInline = Utility.AddDrawing("Square", {
+                        Position = Vector2.new(InternalOutline.Position.X + InternalBase.Size.X + 14, InternalOutline.Position.Y + 26),
+                        Size = Vector2.new(16, 196),
+                        Thickness = 0,
+                        Color = Library.Theme.Inline,
+                        Visible = true,
+                        Filled = true,
+                        ZIndex = 3
+                    })
+                    --
+                    local InternalHue = Utility.AddDrawing("Image", {
+                        Size = Vector2.new(InternalHueInline.Size.X - 2, InternalHueInline.Size.Y - 2),
+                        Position = Vector2.new(InternalHueInline.Position.X + 1, InternalHueInline.Position.Y + 1),
+                        Data = Library.Theme.Hue,
+                        Transparency = 1,
+                        Visible = true,
+                        ZIndex = 3
+                    })
+                    --
+                    local InternalOutlineHuePicker = Utility.AddDrawing("Square", {
+                        Position = Vector2.new(InternalOutline.Position.X + InternalBase.Size.X + 12, InternalOutline.Position.Y + 26),
+                        Size = Vector2.new(InternalHueInline.Size.X + 2, 6),
+                        Thickness = 2,
+                        Color = Library.Theme.Outline,
+                        Visible = true,
+                        Filled = false,
+                        ZIndex = 3
+                    })
+                    --
+                    local InternalHuePicker = Utility.AddDrawing("Square", {
+                        Position = Vector2.new(InternalOutlineHuePicker.Position.X + 1, InternalOutlineHuePicker.Position.Y + 1),
+                        Size = Vector2.new(InternalOutlineHuePicker.Size.X - 2, InternalOutlineHuePicker.Size.Y - 2),
+                        Thickness = 2,
+                        Color = Library.Theme.Text,
+                        Visible = true,
+                        Filled = false,
+                        ZIndex = 3
+                    })
+                    --
+                    
+                    --
+                    local Cursor = Utility.AddDrawing("Image", {
+                        Size = Vector2.new(6, 6),
+                        Data = Library.Theme.SaturationCursor,
+                        Transparency = 1,
+                        Visible = true,
+                        ZIndex = 6
+                    })
+                    --
+                    local InternalInlineHex = Utility.AddDrawing("Square", {
+                        Size = Vector2.new(80 - 2, 18 - 2),
+                        Position = Vector2.new(InternalOutline.Position.X + 8 + 1, InternalOutline.Position.Y + InternalSaturation.Size.Y + 30 + 1),
+                        Thickness = 0,
+                        Color = Library.Theme.Inline,
+                        Visible = true,
+                        Filled = true,
+                        ZIndex = 3
+                    })
+                    --
+                    local InternalOutlineHex = Utility.AddDrawing("Square", {
+                        Size = Vector2.new(InternalInlineHex.Size.X - 2, InternalInlineHex.Size.Y - 2),
+                        Position = Vector2.new(InternalInlineHex.Position.X + 1, InternalInlineHex.Position.Y + 1),
+                        Thickness = 0,
+                        Color = Library.Theme.LightContrast, --Library.Theme.Outline,
+                        Visible = true,
+                        Filled = true,
+                        ZIndex = 3
+                    })
+                    --
+                    local InternalHex = Utility.AddDrawing("Text", {
+                        Text = ("#%s"):format(tostring(Colorpicker.HexColor)),
+                        Position = Vector2.new(InternalOutlineHex.Position.X + (InternalOutlineHex.Size.X / 2), InternalOutlineHex.Position.Y),
+                        Center = true,
+                        Outline = false,
+                        Font = Library.Theme.Font,
+                        Size = Library.Theme.TextSize,
+                        Color = Library.Theme.Text,
+                        Visible = true,
+                        ZIndex = 3
+                    })
+                    --
+                    local InternalInlineRGB = Utility.AddDrawing("Square", {
+                        Size = Vector2.new(130 - 2, 18 - 2),
+                        Position = Vector2.new(InternalOutline.Position.X + 90 + 1, InternalOutline.Position.Y + InternalSaturation.Size.Y + 30 + 1),
+                        Thickness = 0,
+                        Color = Library.Theme.Inline,
+                        Visible = true,
+                        Filled = true,
+                        ZIndex = 3
+                    })
+                    --
+                    local InternalOutlineRGB = Utility.AddDrawing("Square", {
+                        Size = Vector2.new(InternalInlineRGB.Size.X - 2, InternalInlineRGB.Size.Y - 2),
+                        Position = Vector2.new(InternalInlineRGB.Position.X + 1, InternalInlineRGB.Position.Y + 1),
+                        Thickness = 0,
+                        Color = Library.Theme.LightContrast, --Library.Theme.Outline,
+                        Visible = true,
+                        Filled = true,
+                        ZIndex = 3
+                    })
+                    --
+                    local InternalRGB = Utility.AddDrawing("Text", {
+                        Text = ("%s, %s, %s"):format(math.floor(Colorpicker.Color.R * 255), math.floor(Colorpicker.Color.G * 255), math.floor(Colorpicker.Color.B * 255)),
+                        Position = Vector2.new(InternalOutlineRGB.Position.X + (InternalOutlineRGB.Size.X / 2), InternalOutlineRGB.Position.Y),
+                        Center = true,
+                        Outline = false,
+                        Font = Library.Theme.Font,
+                        Size = Library.Theme.TextSize,
+                        Color = Library.Theme.Text,
+                        Visible = true,
+                        ZIndex = 3
+                    })
+                    --
+                    
+                    --
+                    local InternalInlineRainbow = Utility.AddDrawing("Square", {
+                        Size = Vector2.new(100 - 2, 18 - 2),
+                        Position = Vector2.new((InternalOutline.Position.X + InternalOutline.Size.X) - 100 - 2 + 1, InternalOutline.Position.Y + 4 + 1),
+                        Thickness = 0,
+                        Color = Library.Theme.Inline,
+                        Visible = true,
+                        Filled = true,
+                        ZIndex = 3
+                    })
+                    --
+                    local InternalOutlineRainbow = Utility.AddDrawing("Square", {
+                        Size = Vector2.new(InternalInlineRainbow.Size.X - 2, InternalInlineRainbow.Size.Y - 2),
+                        Position = Vector2.new(InternalInlineRainbow.Position.X + 1, InternalInlineRainbow.Position.Y + 1),
+                        Thickness = 0,
+                        Color = Library.Theme.LightContrast, --Library.Theme.Outline,
+                        Visible = true,
+                        Filled = true,
+                        ZIndex = 3
+                    })
+                    --
+                    local InternalRainbow = Utility.AddDrawing("Text", {
+                        Text = "Rainbow",
+                        Position = Vector2.new(InternalOutlineRainbow.Position.X + (InternalOutlineRainbow.Size.X / 2), InternalOutlineRainbow.Position.Y),
+                        Center = true,
+                        Outline = false,
+                        Font = Library.Theme.Font,
+                        Size = Library.Theme.TextSize,
+                        Color = Library.Theme.Text,
+                        Visible = true,
+                        ZIndex = 3
+                    })
+                    --
+                    function Colorpicker:Drop(State)
+                        InternalInline.Visible = State
+                        InternalOutline.Visible = State
+                        InternalTitle.Visible = State
+                        InternalBaseInline.Visible = State
+                        InternalBase.Visible = State
+                        InternalSaturation.Visible = State
+                        InternalHueInline.Visible = State
+                        InternalHue.Visible = State
+                        InternalOutlineHex.Visible = State
+                        InternalInlineHex.Visible = State
+                        InternalHex.Visible = State
+                        InternalInlineRGB.Visible = State
+                        InternalOutlineRGB.Visible = State
+                        InternalRGB.Visible = State
+                        InternalInlineRainbow.Visible = State
+                        InternalOutlineRainbow.Visible = State
+                        InternalRainbow.Visible = State
+                        InternalTopline.Visible = State
+                        Cursor.Visible = State
+                        InternalOutlineHuePicker.Visible = State
+                        InternalHuePicker.Visible = State
+                        Tab.Dropdowns[Side][ColorpickerTitle.Text] = State
+                    end
+                    --
+                    Colorpicker.Offsets.X = InternalBase.Position.X
+                    Colorpicker.Offsets.Y = InternalBase.Position.Y
+                    --
+                    function Colorpicker:SetHue(Options)
+                        local Percent = Options.Percent or Options.Value
+    
+                        Colorpicker.Colors.HSV[1] = Options.Value
+
+                        local HSVColor = Color3.fromHSV(Colorpicker.Colors.HSV[1], Colorpicker.Colors.HSV[2], Colorpicker.Colors.HSV[3])
+                        
+                        InternalOutlineHuePicker.Position = Vector2.new(InternalOutline.Position.X + InternalBase.Size.X + 12, InternalHue.Position.Y + (InternalHue.Size.Y * Percent) - 4)
+                        InternalHuePicker.Position = Vector2.new(InternalOutlineHuePicker.Position.X + 1, InternalOutlineHuePicker.Position.Y + 1)
+
+                        InternalBase.Color = Color3.fromHSV(Colorpicker.Colors.HSV[1], 1, 1)
+
+                        InternalHex.Text = ("#%s"):format(tostring(HSVColor:ToHex()))
+                        
+                        local CalculateRGB = Color3.fromRGB(math.floor((HSVColor.R * 255)), math.floor((HSVColor.G * 255)), math.floor((HSVColor.B * 255)))
+                        InternalRGB.Text = ("%s, %s, %s"):format(math.floor(CalculateRGB.R * 255), math.floor(CalculateRGB.G * 255), math.floor(CalculateRGB.B * 255))
+
+                        ColorpickerBase.Color = HSVColor
+
+                        if not Options.Visual then
+                            Library.Flags[Colorpicker.Flag] = HSVColor
+                            Colorpicker.Callback(HSVColor)
+                        end
+                    end
+                    --
+                    function Colorpicker:RefreshHue()
+                        local PercentHue = math.clamp(((Mouse.Y + 36) - InternalHue.Position.Y) / (InternalHue.Size.Y), 0, 1)
+                        local ValueHue = math.floor((0 + (1 - 0) * PercentHue) * Colorpicker.Decimals) / Colorpicker.Decimals
+                        ValueHue = math.clamp(ValueHue, 0, 1)
+                        self:SetHue({
+                            Value = ValueHue, 
+                            Percent = PercentHue
+                        })
+                    end
+                    --
+                    function Colorpicker:SetSaturationX(Options)
+                        local PercentX = Options.Percent or Options.Value
+
+                        local HSVColor = Color3.fromHSV(Colorpicker.Colors.HSV[1], Colorpicker.Colors.HSV[2], Colorpicker.Colors.HSV[3])
+                        Colorpicker.Colors.HSV[2] = Options.Value
+
+                        Cursor.Position = Vector2.new(InternalBase.Position.X + (InternalBase.Size.X * PercentX) - 4, Colorpicker.Offsets.Y)
+                        Colorpicker.Offsets.X = Cursor.Position.X
+
+                        InternalHex.Text = ("#%s"):format(tostring(HSVColor:ToHex()))
+
+                        local CalculateRGB = Color3.fromRGB(math.floor((HSVColor.R * 255)), math.floor((HSVColor.G * 255)), math.floor((HSVColor.B * 255)))
+                        InternalRGB.Text = ("%s, %s, %s"):format(math.floor(CalculateRGB.R * 255), math.floor(CalculateRGB.G * 255), math.floor(CalculateRGB.B * 255))
+
+                        ColorpickerBase.Color = HSVColor
+
+                        if not Options.Visual then
+                            Library.Flags[Colorpicker.Flag] = HSVColor
+                            Colorpicker.Callback(HSVColor)
+                        end
+                    end
+                    --
+                    function Colorpicker:SetSaturationY(Options)
+                        local PercentY = Options.Percent or 1 - Options.Value
+
+                        local HSVColor = Color3.fromHSV(Colorpicker.Colors.HSV[1], Colorpicker.Colors.HSV[2], Colorpicker.Colors.HSV[3])
+                        Colorpicker.Colors.HSV[3] = Options.Value
+    
+                        Cursor.Position = Vector2.new(Colorpicker.Offsets.X, InternalBase.Position.Y + (InternalBase.Size.Y * PercentY) - 4)
+                        Colorpicker.Offsets.Y = Cursor.Position.Y
+
+                        InternalHex.Text = ("#%s"):format(tostring(HSVColor:ToHex()))
+
+                        local CalculateRGB = Color3.fromRGB(math.floor((HSVColor.R * 255)), math.floor((HSVColor.G * 255)), math.floor((HSVColor.B * 255)))
+                        InternalRGB.Text = ("%s, %s, %s"):format(math.floor(CalculateRGB.R * 255), math.floor(CalculateRGB.G * 255), math.floor(CalculateRGB.B * 255))
+
+                        ColorpickerBase.Color = HSVColor
+
+                        if not Options.Visual then
+                            Library.Flags[Colorpicker.Flag] = HSVColor
+                            Colorpicker.Callback(HSVColor)
+                        end
+                    end
+                    --
+                    function Colorpicker:RefreshSaturation()
+                        local PercentX = math.clamp((Mouse.X - InternalSaturation.Position.X) / (InternalSaturation.Size.X), 0, 1)
+                        local ValueX = math.floor((1 * PercentX) * Colorpicker.Decimals) / Colorpicker.Decimals
+                        ValueX = math.clamp(ValueX, 0, 1)
+                        self:SetSaturationX({
+                            Value = ValueX, 
+                            Percent = PercentX
+                        })
+                        --
+                        local PercentY = math.clamp(((Mouse.Y + 36) - InternalSaturation.Position.Y) / (InternalSaturation.Size.Y), 0, 1)
+                        local ValueY = 1 - math.floor((1 * PercentY) * Colorpicker.Decimals) / Colorpicker.Decimals
+                        ValueY = math.clamp(ValueY, 0, 1)
+                        self:SetSaturationY({
+                            Value = ValueY, 
+                            Percent = PercentY
+                        })
+                    end
+                    --
+                    Utility.AddConnection(UserInput.InputEnded, function(Input, Useless)
+                        
+                        for Index, Value in pairs(Tab.Dropdowns[Side]) do
+                            if Index ~= ColorpickerTitle.Text and Value then
+                                return
+                            end
+                        end
+                        if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+                            Colorpicker.HueDragging = false
+                            Colorpicker.SaturationDragging = false
+                        end
+                    end)
+    
+                    Utility.AddConnection(UserInput.InputChanged, function(Input, Useless)
+                        if Utility.OnMouse(ColorpickerInline) then
+                            ColorpickerInline.Color = Library.Theme.Accent[1]
+                        else
+                            ColorpickerInline.Color = Library.Theme.Inline
+                        end
+                        if Utility.OnMouse(ColorpickerInline) then
+                            ColorpickerInline.Color = Library.Theme.Accent[1]
+                        else
+                            ColorpickerInline.Color = Library.Theme.Inline
+                        end
+                        
+                        if Input.UserInputType == Enum.UserInputType.MouseMovement then
+                            for Index, Value in pairs(Tab.Dropdowns[Side]) do
+                                if Index ~= ColorpickerTitle.Text and Value then
+                                    return
+                                end
+                            end
+                            if Colorpicker.HueDragging then
+                                Colorpicker:RefreshHue()
+                            elseif Colorpicker.SaturationDragging then
+                                Colorpicker:RefreshSaturation()
+                            end
+                        end
+                    end)
+                    --
+                    Utility.AddConnection(UserInput.InputBegan, function(Input, Useless)
+                        
+                        if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+                            for Index, Value in pairs(Tab.Dropdowns[Side]) do
+                                if Index ~= ColorpickerTitle.Text and Value then
+                                    return
+                                end
+                            end
+                            if Utility.OnMouse(ColorpickerInline) then
+                                Colorpicker.Dropped = not Colorpicker.Dropped
+                                Tab.Dropdowns[Side][ColorpickerTitle.Text] = Colorpicker.Dropped
+                                Colorpicker:Drop(Colorpicker.Dropped)
+                            elseif Utility.OnMouse(InternalSaturation) then
+                                Colorpicker:RefreshSaturation()
+                                Colorpicker.SaturationDragging = true
+                            elseif Utility.OnMouse(InternalHue) then
+                                Colorpicker:RefreshHue()
+                                Colorpicker.HueDragging = true
+                            elseif Utility.OnMouse(InternalInlineRainbow) then
+                                Colorpicker.Rainbow = not Colorpicker.Rainbow
+                                InternalRainbow.Color = Colorpicker.Rainbow and Library.Theme.Accent[1] or Library.Theme.Text
+                                if not Colorpicker.Rainbow then
+                                    Colorpicker:SetHue({Value = Colorpicker.Colors.HSV[1]})
+                                    Colorpicker:SetSaturationX({Value = Colorpicker.Colors.HSV[2]})
+                                    Colorpicker:SetSaturationY({Value = Colorpicker.Colors.HSV[3]})
+                                end
+                            else
+                                Colorpicker.Dropped = false
+                                Tab.Dropdowns[Side][ColorpickerTitle.Text] = Colorpicker.Dropped
+                                Colorpicker:Drop(Colorpicker.Dropped)
+                            end
+                        end
+                    end)
+                    --
+                    Utility.AddConnection(RunService.RenderStepped, function(Input, Useless)
+                        if Colorpicker.Rainbow then
+                            -- Colorpicker:SetHue({Value = tick() % 2 / 2, Visual = true})
+                            -- Colorpicker:SetSaturationX({Value = 0.5, Visual = true})
+                            -- Colorpicker:SetSaturationY({Value = 1, Visual = true})
+                            Library.Flags[Colorpicker.Flag] = Color3.fromHSV(tick() % 2 / 2, 0.5, 1)
+                            Colorpicker.Callback(Color3.fromHSV(tick() % 2 / 2, 0.5, 1))
+                        end
+                    end)
+                    --
+                    Colorpicker:SetHue({Value = Colorpicker.Colors.HSV[1]})
+                    Colorpicker:SetSaturationX({Value = Colorpicker.Colors.HSV[2]})
+                    Colorpicker:SetSaturationY({Value = Colorpicker.Colors.HSV[3]})
+                    --
+                    Section.ContentAxis = Section.ContentAxis + ColorpickerBase.Size.Y + 10
+                    Tab.SectionAxis = {
+                        Side == "Left" and Tab.SectionAxis[1] +  ColorpickerBase.Size.Y + 10 or Tab.SectionAxis[1], 
+                        Side == "Right" and Tab.SectionAxis[2] +  ColorpickerBase.Size.Y + 10 or Tab.SectionAxis[2]
+                    }
+                    --
+                    self:UpdateSizeY(Section.ContentAxis + ColorpickerBase.Size.Y)
+                    --
+                    Tab["Render"][#Tab["Render"] + 1] = ColorpickerTitle
+                    Tab["Render"][#Tab["Render"] + 1] = ColorpickerInline
+                    Tab["Render"][#Tab["Render"] + 1] = ColorpickerOutline
+                    Tab["Render"][#Tab["Render"] + 1] = ColorpickerBase
+                    Tab["Render"][#Tab["Render"] + 1] = ColorpickerGradient
+                    --
+                    Colorpicker:Drop(false)
+                    --
+                    return Colorpicker
+                end
+                --
+                function Section:Dropdown(Options)
+                    local Dropdown = {
+                        TypeOf = "Dropdown",
+                        Axis = Section.ContentAxis,
+                        List = List or {""},
+                        ListRender = {
+                            Texts = {},
+                            Objects = {}
+                        }, 
+                        Show = true,
+                        Selected = Options.Default or Options.List[1],
+                        BaseSize = 16,
+                        Callback = typeof(Options.Callback) == "function" and Options.Callback or function() end
+                    }
+                    --
+                    Options.Flag = Options.Flag or "AWGWJIjgAWJIGIJAWG"
+                    Library.Flags[Options.Flag] = Dropdown.Selected
+                    --
+                    local DropdownInline = Utility.AddDrawing("Square", {
+                        Position = Vector2.new(SectionInline.Position.X + 8, SectionInline.Position.Y + 23 + Dropdown.Axis + 16),
+                        Size = Vector2.new(SectionOutline.Size.X - 12, Dropdown.BaseSize),
+                        Thickness = 0,
+                        Color = Library.Theme.Inline,
+                        Visible = true,
+                        Filled = true
+                    })
+                    --
+                    local DropdownOutline = Utility.AddDrawing("Square", {
+                        Size = Vector2.new(DropdownInline.Size.X - 2, DropdownInline.Size.Y - 2),
+                        Position = Vector2.new(DropdownInline.Position.X + 1, DropdownInline.Position.Y + 1),
+                        Thickness = 0,
+                        Color = Library.Theme.LightContrast, --Library.Theme.Outline,
+                        Visible = true,
+                        Filled = true
+                    })
+                    --
+                    local DropdownGradient = Utility.AddDrawing("Image", {
+                        Size = Vector2.new(DropdownInline.Size.X - 2, DropdownInline.Size.Y - 2),
+                        Position = Vector2.new(DropdownInline.Position.X + 1, DropdownInline.Position.Y + 1),
+                        Data = Library.Theme.Gradient,
+                        Transparency = 1,
+                        Visible = true
+                    })
+                    --
+                    local DropdownTitle = Utility.AddDrawing("Text", {
+                        Text = Options.Title,
+                        Position = Vector2.new(DropdownInline.Position.X + 2, DropdownInline.Position.Y - 16),
+                        Center = false,
+                        Outline = false,
+                        Font = Library.Theme.Font,
+                        Size = Library.Theme.TextSize,
+                        Color = Library.Theme.Text,
+                        Visible = true,
+                        ZIndex = 2
+                    })
+                    --
+                    local DropdownValue = Utility.AddDrawing("Text", {
+                        Text = Options.Default,
+                        Position = Vector2.new(DropdownOutline.Position.X + 4, DropdownOutline.Position.Y),
+                        Center = false,
+                        Outline = false,
+                        Font = Library.Theme.Font,
+                        Size = Library.Theme.TextSize,
+                        Color = Library.Theme.Text,
+                        Visible = true,
+                        ZIndex = 2
+                    })
+                    --
+                    local DropdownSymbol = Utility.AddDrawing("Text", {
+                        Text = "+",
+                        Position = Vector2.new(DropdownOutline.Position.X + DropdownOutline.Size.X - 12, DropdownOutline.Position.Y),
+                        Center = false,
+                        Outline = false,
+                        Font = Library.Theme.Font,
+                        Size = Library.Theme.TextSize,
+                        Color = Library.Theme.Text,
+                        Visible = true,
+                        ZIndex = 2
+                    })
+                    --
+                    local DropdownDetect = Utility.AddDrawing("Square", {
+                        Thickness = 0,
+                        Transparency = 0,
+                        Color = Library.Theme.Hitbox, --Library.Theme.Outline,
+                        Visible = true,
+                        Filled = true
+                    })
+                    --
+                    function Dropdown:Set(Selected)
+                        for Index, Value in pairs(Dropdown.ListRender.Texts) do
+                            Value.Color = Library.Theme.Text
+                        end
+                        Dropdown.ListRender.Texts[Selected].Color = Library.Theme.Accent[1]
+                        Dropdown.Selected = Selected
+                        DropdownValue.Text = Selected
+                        Dropdown.Callback(Dropdown.Selected)
+                        Library.Flags[Options.Flag] = Dropdown.Selected
+                    end
+                    --
+                    function Dropdown:ShowList(State)
+                        for Index, Value in pairs(Dropdown.ListRender.Objects) do
+                            Value.Visible = State
+                        end
+                        --
+                        for Index, Value in pairs(Dropdown.ListRender.Texts) do
+                            Value.Visible = State
+                        end
+                        --
+                        Tab.Dropdowns[Side][DropdownTitle.Text] = State
+                    end
+                    --
+                    Utility.AddConnection(Library.Communication.Event, function(Type, Color)
+                        if Type == "Accent" then
+                            Dropdown.ListRender.Texts[Dropdown.Selected].Color = Color
+                        elseif Type == "LightContrast" then
+                            DropdownOutline.Color = Color
+                        elseif Type == "Text" then
+                            DropdownTitle.Color = Color
+                            DropdownSymbol.Color = Color
+                            DropdownValue.Color = Color
+                        elseif Type == "Inline" then
+                            DropdownInline.Color = Color
+                        end
+                    end)
+                    --
+                    for Index, Value in pairs(Options.List) do
+                        local SelectionInline = Utility.AddDrawing("Square", {
+                            Position = Vector2.new(DropdownInline.Position.X, (DropdownInline.Position.Y + (Index * (18)))),
+                            Size = Vector2.new(SectionOutline.Size.X - 12, 18),
+                            Thickness = 0,
+                            Color = Library.Theme.Inline,
+                            Visible = true,
+                            Filled = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local SelectionOutline = Utility.AddDrawing("Square", {
+                            Size = Vector2.new(SelectionInline.Size.X - 2, SelectionInline.Size.Y - 2),
+                            Position = Vector2.new(SelectionInline.Position.X + 1, SelectionInline.Position.Y + 1),
+                            Thickness = 0,
+                            Color = Library.Theme.LightContrast, --Library.Theme.Outline,
+                            Visible = true,
+                            Filled = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local SelectionGradient = Utility.AddDrawing("Image", {
+                            Size = Vector2.new(SelectionInline.Size.X - 2, SelectionInline.Size.Y - 2),
+                            Position = Vector2.new(SelectionInline.Position.X + 1, SelectionInline.Position.Y + 1),
+                            Data = Library.Theme.Gradient,
+                            Transparency = 1,
+                            Visible = true,
+                            ZIndex = 3
+                        })
+                        --
+                        local SelectionTitle = Utility.AddDrawing("Text", {
+                            Text = Value,
+                            Position = Vector2.new(SelectionInline.Position.X + 6, SelectionInline.Position.Y + 3),
+                            Center = false,
+                            Outline = false,
+                            Font = Library.Theme.Font,
+                            Size = Library.Theme.TextSize,
+                            Color = Library.Theme.Text,
+                            Visible = true,
+                            ZIndex = 3
+                        })
+                        --
+                        Utility.AddConnection(Library.Communication.Event, function(Type, Color)
+                            if Type == "LightContrast" then
+                                SelectionOutline.Color = Color
+                            elseif Type == "Text" then
+                                SelectionTitle.Color = Color
+                            elseif Type == "Inline" then
+                                SelectionInline.Color = Color
+                            end
+                        end)
+                        --
+                        Utility.AddConnection(UserInput.InputChanged, function(Input, Useless)
+                            if Input.UserInputType == Enum.UserInputType.MouseMovement then
+                                if Utility.OnMouse(SelectionInline) then
+                                    SelectionInline.Color = Library.Theme.Accent[1]
+                                else
+                                    SelectionInline.Color = Library.Theme.Inline
+                                end
+                            end
+                        end)
+                        --
+                        Dropdown.ListRender.Objects[#Dropdown.ListRender.Objects + 1] = SelectionInline
+                        Dropdown.ListRender.Objects[#Dropdown.ListRender.Objects + 1] = SelectionOutline
+                        Dropdown.ListRender.Objects[#Dropdown.ListRender.Objects + 1] = SelectionGradient
+                        Dropdown.ListRender.Texts[Value] = SelectionTitle
+                        --
+                        Utility.AddConnection(UserInput.InputBegan, function(Input, Useless)
+                            if Useless then
+                                return
+                            end
+                            for Index, Value in pairs(Tab.Dropdowns[Side]) do
+                                if Index ~= DropdownTitle.Text and Value then
+                                    return
+                                end
+                            end
+                            if Input.UserInputType == Enum.UserInputType.MouseButton1 and Utility.OnMouse(SelectionInline) then
+                                Dropdown:Set(Value)
+                            end
+                        end)
+                        --
+                    end
+                    --
+                    DropdownDetect.Position = Vector2.new(DropdownInline.Position.X, DropdownInline.Position.Y + DropdownInline.Size.Y)
+                    DropdownDetect.Size = Vector2.new(SectionOutline.Size.X - 12, (#Options.List * Dropdown.BaseSize) + Dropdown.BaseSize)
+                    --
+                    Dropdown:Set(Dropdown.Selected)
+                    Dropdown:ShowList(false)
+                    --
+                    Utility.AddConnection(UserInput.InputBegan, function(Input, Useless)
+                        
+                        if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+                            if Utility.OnMouse(DropdownInline) then
+                                for Index, Value in pairs(Tab.Dropdowns[Side]) do
+                                    if Index ~= DropdownTitle.Text and Value then
+                                        return
+                                    end
+                                end
+                                Dropdown.Show = not Dropdown.Show
+                                Tab.Dropdowns[Side][DropdownTitle.Text] = Dropdown.Show
+                                DropdownSymbol.Text = Dropdown.Show and "-" or "+"
+                                Dropdown:ShowList(Dropdown.Show)
+                            elseif not Utility.OnMouse(DropdownDetect) then
+                                Dropdown.Show = false
+                                Tab.Dropdowns[Side][DropdownTitle.Text] = Dropdown.Show
+                                DropdownSymbol.Text = "+"
+                                Dropdown:ShowList(false)
+                            end
+                        end
+                    end)
+                    --
+                    Utility.AddConnection(UserInput.InputChanged, function(Input, Useless)
+                        if Input.UserInputType == Enum.UserInputType.MouseMovement then
+                            if Utility.OnMouse(DropdownInline) then
+                                DropdownInline.Color = Library.Theme.Accent[1]
+                            else
+                                DropdownInline.Color = Library.Theme.Inline
+                            end
+                        end
+                    end)
+                    --
+                    Section.ContentAxis = Section.ContentAxis + DropdownOutline.Size.Y + 20
+                    Tab.SectionAxis = {
+                        Side == "Left" and Tab.SectionAxis[1] + DropdownOutline.Size.Y + 20 or Tab.SectionAxis[1], 
+                        Side == "Right" and Tab.SectionAxis[2] + DropdownOutline.Size.Y + 20 or Tab.SectionAxis[2]
+                    }
+                    --
+                    self:UpdateSizeY(Section.ContentAxis + DropdownOutline.Size.Y)
+                    --
+                    Tab["Render"][#Tab["Render"] + 1] = DropdownInline
+                    Tab["Render"][#Tab["Render"] + 1] = DropdownOutline
+                    Tab["Render"][#Tab["Render"] + 1] = DropdownTitle
+                    Tab["Render"][#Tab["Render"] + 1] = DropdownGradient
+                    Tab["Render"][#Tab["Render"] + 1] = DropdownSymbol
+                    Tab["Render"][#Tab["Render"] + 1] = DropdownValue
+                    --
+                    return Dropdown
+                end
+                --
+                function Section:Label(Title)
+                    local Label = {
+                        Axis = Section.ContentAxis
+                    }
+                    --
+                    local LabelTitle = Utility.AddDrawing("Text", {
+                        Text = Title,
+                        Position = Vector2.new(SectionInline.Position.X + 6, SectionInline.Position.Y + 23 + Label.Axis),
+                        Center = false,
+                        Outline = false,
+                        Font = Library.Theme.Font,
+                        Size = Library.Theme.TextSize,
+                        Color = Library.Theme.Text,
+                        Visible = true,
+                        ZIndex = 2
+                    })
+                    --
+                    function Label:Set(Txt)
+                        LabelTitle.Text = Txt
+                    end
+                    --
+                    Section.ContentAxis = Section.ContentAxis + LabelTitle.Size + 8
+                    Tab.SectionAxis = {
+                        Side == "Left" and Tab.SectionAxis[1] +  LabelTitle.Size + 8 or Tab.SectionAxis[1], 
+                        Side == "Right" and Tab.SectionAxis[2] +  LabelTitle.Size + 8 or Tab.SectionAxis[2]
+                    }
+                    --
+                    self:UpdateSizeY(Section.ContentAxis + LabelTitle.Size)
+                    --
+                    Tab["Render"][#Tab["Render"] + 1] = LabelTitle
+                    --
+                    return Label
+                end
+                --
+                function Section:Keybind(Options)
+                    local Keybind = {
+                        Axis = Section.ContentAxis,
+                        Title = Options.Title and Options.Title or "LOL",
+                        EnumType = Options.Key.EnumType == Enum.KeyCode and "KeyCode" or "UserInputType",
+                        Key = Options.Key or Enum.UserInputType.MouseButton2,
+                        StateType = Options.StateType or "Hold",
+                        State = false,
+                        Shorten = "",
+                        Binding = false,
+                        Dropped = false,
+                        Callback = typeof(Options.Callback) == "function" and Options.Callback or function() end
+                    }
+                    --
+                    if Keybind.StateType == "Always" then
+                        Keybind.Callback(Keybind.State, Keybind.Key)
+                    end
+                    --
+                    Keybind.Shorten = Library.Keys.Shortened[Keybind.Key.Name] or Keybind.Key.Name
+                    --
+                    local KeybindTitle = Utility.AddDrawing("Text", {
+                        Text = Options.Title,
+                        Position = Vector2.new(SectionInline.Position.X + 6, SectionInline.Position.Y + 26 + Keybind.Axis),
+                        Center = false,
+                        Outline = false,
+                        Font = Library.Theme.Font,
+                        Size = Library.Theme.TextSize,
+                        Color = Library.Theme.Text,
+                        Visible = true,
+                        ZIndex = 2
+                    })
+                    --
+                    local KeybindInline = Utility.AddDrawing("Square", {
+                        Position = Vector2.new(SectionInline.Position.X + SectionInline.Size.X - 40 - 6, SectionInline.Position.Y + 23 + Keybind.Axis + 2),
+                        Size = Vector2.new(40, 14),
+                        Thickness = 0,
+                        Color = Library.Theme.Inline,
+                        Visible = true,
+                        Filled = true
+                    })
+                    --
+                    local KeybindOutline = Utility.AddDrawing("Square", {
+                        Size = Vector2.new(KeybindInline.Size.X - 2, KeybindInline.Size.Y - 2),
+                        Position = Vector2.new(KeybindInline.Position.X + 1, KeybindInline.Position.Y + 1),
+                        Thickness = 0,
+                        Color = Library.Theme.LightContrast, --Library.Theme.Outline,
+                        Visible = true,
+                        Filled = true
+                    })
+                    --
+                    local KeybindGradient = Utility.AddDrawing("Image", {
+                        Size = Vector2.new(KeybindInline.Size.X - 2, KeybindInline.Size.Y - 2),
+                        Position = Vector2.new(KeybindInline.Position.X + 1, KeybindInline.Position.Y + 1),
+                        Data = Library.Theme.Gradient,
+                        Transparency = 1,
+                        Visible = true
+                    })
+                    --
+                    local KeybindValue = Utility.AddDrawing("Text", {
+                        Text = Keybind.Shorten,
+                        Position = Vector2.new(KeybindInline.Position.X + (KeybindInline.Size.X / 2), KeybindInline.Position.Y),
+                        Center = true,
+                        Outline = false,
+                        Font = Library.Theme.Font,
+                        Size = Library.Theme.TextSize,
+                        Color = Library.Theme.Text,
+                        Visible = true,
+                        ZIndex = 2
+                    })
+                    --
+                    local KeybindHoldInline = Utility.AddDrawing("Square", {
+                        Position = Vector2.new(SectionInline.Position.X + SectionInline.Size.X + 2 - 6, SectionInline.Position.Y + 23 + Keybind.Axis + 2),
+                        Size = Vector2.new(60, 16),
+                        Thickness = 0,
+                        Color = Library.Theme.Inline,
+                        Visible = true,
+                        Filled = true
+                    })
+                    --
+                    local KeybindHoldOutline = Utility.AddDrawing("Square", {
+                        Size = Vector2.new(KeybindHoldInline.Size.X - 2, KeybindHoldInline.Size.Y - 2),
+                        Position = Vector2.new(KeybindHoldInline.Position.X + 1, KeybindHoldInline.Position.Y + 1),
+                        Thickness = 0,
+                        Color = Library.Theme.LightContrast, --Library.Theme.Outline,
+                        Visible = true,
+                        Filled = true
+                    })
+                    --
+                    local KeybindHoldGradient = Utility.AddDrawing("Image", {
+                        Size = Vector2.new(KeybindHoldInline.Size.X - 2, KeybindHoldInline.Size.Y - 2),
+                        Position = Vector2.new(KeybindHoldInline.Position.X + 1, KeybindHoldInline.Position.Y + 1),
+                        Data = Library.Theme.Gradient,
+                        Transparency = 1,
+                        Visible = true
+                    })
+                    --
+                    local KeybindHoldValue = Utility.AddDrawing("Text", {
+                        Text = "Hold",
+                        Position = Vector2.new(KeybindHoldInline.Position.X + (KeybindHoldInline.Size.X / 2), KeybindHoldInline.Position.Y),
+                        Center = true,
+                        Outline = false,
+                        Font = Library.Theme.Font,
+                        Size = Library.Theme.TextSize,
+                        Color = Library.Theme.Text,
+                        Visible = true,
+                        ZIndex = 2
+                    })
+                    --
+                    local KeybindToggleInline = Utility.AddDrawing("Square", {
+                        Position = Vector2.new(SectionInline.Position.X + SectionInline.Size.X + 2 - 6, SectionInline.Position.Y + 23 + Keybind.Axis + 2 + 18),
+                        Size = Vector2.new(60, 16),
+                        Thickness = 0,
+                        Color = Library.Theme.Inline,
+                        Visible = true,
+                        Filled = true
+                    })
+                    --
+                    local KeybindToggleOutline = Utility.AddDrawing("Square", {
+                        Size = Vector2.new(KeybindToggleInline.Size.X - 2, KeybindToggleInline.Size.Y - 2),
+                        Position = Vector2.new(KeybindToggleInline.Position.X + 1, KeybindToggleInline.Position.Y + 1),
+                        Thickness = 0,
+                        Color = Library.Theme.LightContrast, --Library.Theme.Outline,
+                        Visible = true,
+                        Filled = true
+                    })
+                    --
+                    local KeybindToggleGradient = Utility.AddDrawing("Image", {
+                        Size = Vector2.new(KeybindToggleInline.Size.X - 2, KeybindToggleInline.Size.Y - 2),
+                        Position = Vector2.new(KeybindToggleInline.Position.X + 1, KeybindToggleInline.Position.Y + 1),
+                        Data = Library.Theme.Gradient,
+                        Transparency = 1,
+                        Visible = true
+                    })
+                    --
+                    local KeybindToggleValue = Utility.AddDrawing("Text", {
+                        Text = "Toggle",
+                        Position = Vector2.new(KeybindToggleInline.Position.X + (KeybindToggleInline.Size.X / 2), KeybindToggleInline.Position.Y),
+                        Center = true,
+                        Outline = false,
+                        Font = Library.Theme.Font,
+                        Size = Library.Theme.TextSize,
+                        Color = Library.Theme.Text,
+                        Visible = true,
+                        ZIndex = 2
+                    })
+                    --
+                    local KeybindAlwaysInline = Utility.AddDrawing("Square", {
+                        Position = Vector2.new(SectionInline.Position.X + SectionInline.Size.X + 2 - 6, SectionInline.Position.Y + 23 + Keybind.Axis + 2 + 34),
+                        Size = Vector2.new(60, 16),
+                        Thickness = 0,
+                        Color = Library.Theme.Inline,
+                        Visible = true,
+                        Filled = true
+                    })
+                    --
+                    local KeybindAlwaysOutline = Utility.AddDrawing("Square", {
+                        Size = Vector2.new(KeybindAlwaysInline.Size.X - 2, KeybindAlwaysInline.Size.Y - 2),
+                        Position = Vector2.new(KeybindAlwaysInline.Position.X + 1, KeybindAlwaysInline.Position.Y + 1),
+                        Thickness = 0,
+                        Color = Library.Theme.LightContrast, --Library.Theme.Outline,
+                        Visible = true,
+                        Filled = true
+                    })
+                    --
+                    local KeybindAlwaysGradient = Utility.AddDrawing("Image", {
+                        Size = Vector2.new(KeybindAlwaysInline.Size.X - 2, KeybindAlwaysInline.Size.Y - 2),
+                        Position = Vector2.new(KeybindAlwaysInline.Position.X + 1, KeybindAlwaysInline.Position.Y + 1),
+                        Data = Library.Theme.Gradient,
+                        Transparency = 1,
+                        Visible = true
+                    })
+                    --
+                    local KeybindAlwaysValue = Utility.AddDrawing("Text", {
+                        Text = "Always",
+                        Position = Vector2.new(KeybindAlwaysInline.Position.X + (KeybindAlwaysInline.Size.X / 2), KeybindAlwaysInline.Position.Y),
+                        Center = true,
+                        Outline = false,
+                        Font = Library.Theme.Font,
+                        Size = Library.Theme.TextSize,
+                        Color = Library.Theme.Text,
+                        Visible = true,
+                        ZIndex = 2
+                    })
+                    --
+                    function Keybind:Drop(State)
+                        KeybindHoldInline.Visible = State
+                        KeybindHoldOutline.Visible = State
+                        KeybindHoldGradient.Visible = State
+                        KeybindHoldValue.Visible = State
+
+                        KeybindToggleInline.Visible = State
+                        KeybindToggleOutline.Visible = State
+                        KeybindToggleGradient.Visible = State
+                        KeybindToggleValue.Visible = State
+
+                        KeybindAlwaysInline.Visible = State
+                        KeybindAlwaysOutline.Visible = State
+                        KeybindAlwaysGradient.Visible = State
+                        KeybindAlwaysValue.Visible = State
+                    end
+                    --
+                    function Keybind:SetStateType(State)
+                        if State == "Hold" then
+                            Keybind.StateType = "Hold"
+
+                            KeybindAlwaysValue.Color = Library.Theme.Text
+                            KeybindToggleValue.Color = Library.Theme.Text
+                            KeybindHoldValue.Color = Library.Theme.Accent[1]
+                        elseif State == "Toggle" then
+                            Keybind.StateType = "Toggle"
+
+                            KeybindAlwaysValue.Color = Library.Theme.Text
+                            KeybindToggleValue.Color = Library.Theme.Accent[1]
+                            KeybindHoldValue.Color = Library.Theme.Text
+                        else
+                            Keybind.StateType = "Always"
+
+                            KeybindAlwaysValue.Color = Library.Theme.Accent[1]
+                            KeybindToggleValue.Color = Library.Theme.Text
+                            KeybindHoldValue.Color = Library.Theme.Text
+
+                            Keybind.State = true
+                            Keybind.Callback(Keybind.State, Keybind.Key)
+                        end
+                    end
+                    --
+                    Utility.AddConnection(UserInput.InputBegan, function(Input, Useless)
+                        
+                        if Input.UserInputType == Enum.UserInputType.MouseButton1 then
+                            if Keybind.Binding then
+                                Keybind.Binding = false
+                                Keybind.Key = Enum.UserInputType.MouseButton1
+                                Keybind.EnumType = "UserInputType"
+                                Keybind.Shorten = Library.Keys.Shortened[Keybind.Key.Name] or Keybind.Key.Name
+                                KeybindValue.Text = Keybind.Binding and "[...]" or Keybind.Shorten
+                            end
+                            if Utility.OnMouse(KeybindInline) then
+                                for Index, Value in pairs(Tab.Dropdowns[Side]) do
+                                    if Index ~= KeybindTitle.Text and Value then
+                                        return
+                                    end
+                                end
+                                if Keybind.Binding then
+                                    Keybind.Binding = false
+                                    KeybindValue.Text = Keybind.Shorten
+                                else
+                                    Keybind.Binding = true
+                                    KeybindValue.Text = Keybind.Binding and "[...]" or Keybind.Shorten
+                                end
+                            end
+                            if Utility.OnMouse(KeybindHoldInline) then
+                                Keybind:SetStateType("Hold")
+                            end
+                            if Utility.OnMouse(KeybindToggleInline) then
+                                Keybind:SetStateType("Toggle")
+                            end
+                            if Utility.OnMouse(KeybindAlwaysInline) then
+                                Keybind:SetStateType("Always")
+                            end
+                        elseif Input.UserInputType == Enum.UserInputType.Keyboard then
+                            if Keybind.Binding then
+                                Keybind.Binding = false
+                                Keybind.Key = Input.KeyCode
+                                Keybind.EnumType = "KeyCode"
+                                Keybind.Shorten = Library.Keys.Shortened[Keybind.Key.Name] or Keybind.Key.Name
+                                KeybindValue.Text = Keybind.Binding and "[...]" or Keybind.Shorten
+                            end
+                        elseif Input.UserInputType == Enum.UserInputType.MouseButton2 then
+                            if Keybind.Binding then
+                                Keybind.Binding = false
+                                Keybind.Key = Enum.UserInputType.MouseButton2
+                                Keybind.EnumType = "UserInputType"
+                                Keybind.Shorten = Library.Keys.Shortened[Keybind.Key.Name] or Keybind.Key.Name
+                                KeybindValue.Text = Keybind.Binding and "[...]" or Keybind.Shorten
+                            end
+                            if Utility.OnMouse(KeybindInline) then
+                                Keybind.Dropped = not Keybind.Dropped
+                                Keybind:Drop(Keybind.Dropped)
+                            end
+                        end
+                    end)
+                    --
+                    Utility.AddConnection(UserInput.InputBegan, function(Input, Useless)
+                        
+                        if (Keybind.EnumType == "KeyCode" and Input.KeyCode == Keybind.Key) or (Keybind.EnumType == "UserInputType" and Input.UserInputType == Keybind.Key) then
+                            if Keybind.StateType == "Toggle" then
+                                Keybind.State = not Keybind.State
+                            elseif Keybind.StateType == "Hold" then
+                                Keybind.State = true
+                            end
+                            Keybind.Callback(Keybind.State, Keybind.Key)
+                        end
+                    end)
+                    --
+                    Keybind:SetStateType(Keybind.StateType)
+                    --
+                    Utility.AddConnection(UserInput.InputEnded, function(Input, Useless)
+                        
+                        if (Keybind.EnumType == "KeyCode" and Input.KeyCode == Keybind.Key) or (Keybind.EnumType == "UserInputType" and Input.UserInputType == Keybind.Key) then
+                            if Keybind.StateType == "Hold" then
+                                Keybind.State = false
+                                Keybind.Callback(Keybind.State, Keybind.Key)
+                            end
+                        end
+                    end)
+                    --
+                    Keybind:Drop(false)
+                    --
+                    Section.ContentAxis = Section.ContentAxis + KeybindInline.Size.Y + 8
+                    Tab.SectionAxis = {
+                        Side == "Left" and Tab.SectionAxis[1] +  KeybindInline.Size.Y + 8 or Tab.SectionAxis[1], 
+                        Side == "Right" and Tab.SectionAxis[2] +  KeybindInline.Size.Y + 8 or Tab.SectionAxis[2]
+                    }
+                    --
+                    self:UpdateSizeY(Section.ContentAxis + KeybindInline.Size.Y)
+                    --
+                    Tab["Render"][#Tab["Render"] + 1] = KeybindTitle
+                    Tab["Render"][#Tab["Render"] + 1] = KeybindInline
+                    Tab["Render"][#Tab["Render"] + 1] = KeybindOutline
+                    Tab["Render"][#Tab["Render"] + 1] = KeybindValue
+                    Tab["Render"][#Tab["Render"] + 1] = KeybindGradient
+                    --
+                    return Keybind
+                end
+                --
+                return Section
+            end
+            --
+            Utility.AddConnection(UserInput.InputBegan, function(Input, Useless)
+                if Useless then
+                    return
+                end
+                if Input.UserInputType == Enum.UserInputType.MouseButton1 and Utility.OnMouse(TabInline) then
+                    task.spawn(function()
+                        --[[
+                            local Speed = 4
+                            local Distance = (TabLine.Position.X - TabOutline.Position.X < 0) and 1 + (Tab.CurrentTab + (#self.Tabs - self.SelectedTab)) * Speed or 1 + ((#self.Tabs - Tab.CurrentTab) + self.SelectedTab) * Speed
+                            local Calculation = (TabLine.Position.X - TabOutline.Position.X < 0) and Distance or -Distance
+                            for Index = TabLine.Position.X, TabOutline.Position.X, Calculation do
+                                TabLine.Position = Vector2.new(Index, TabLine.Position.Y)
+                                task.wait()
+                            end
+                            TabLine.Size = Vector2.new(TabOutline.Size.X, 1)
+                            TabLine.Position = Vector2.new(TabOutline.Position.X, TabLine.Position.Y)
+                        ]]
+                        
+                        self:SwitchTab(Tab)
+                    end)
+                end
+            end)
+            --
+            function Tab:AddPlayerlist()
+                local PlayerList = {
+                    PlayersInList = 0
+                }
+                --
+                local PlayerListTabInline = Utility.AddDrawing("Square", {
+                    Size = Vector2.new(SecondBorderOutline.Size.X - 16, 40),
+                    Position = Vector2.new(SecondBorderOutline.Position.X + 8, SecondBorderOutline.Position.Y + 6),
+                    Thickness = 0,
+                    Color = Library.Theme.Inline,
+                    Visible = true,
+                    Filled = true
+                })
+                --
+                local PlayerListTabOutline = Utility.AddDrawing("Square", {
+                    Size = Vector2.new(PlayerListTabInline.Size.X - 2, PlayerListTabInline.Size.Y - 2),
+                    Position = Vector2.new(PlayerListTabInline.Position.X + 1, PlayerListTabInline.Position.Y + 1),
+                    Thickness = 0,
+                    Color = Library.Theme.Outline,
+                    Visible = true,
+                    Filled = true
+                })
+                --
+                local PlayerListPage = Utility.AddDrawing("Square", {
+                    Size = Vector2.new(PlayerListTabOutline.Size.X - 4, PlayerListTabOutline.Size.Y - 4),
+                    Position = Vector2.new(PlayerListTabOutline.Position.X + 2, PlayerListTabOutline.Position.Y + 2),
+                    Thickness = 0,
+                    Color = Library.Theme.DarkContrast,
+                    Visible = true,
+                    Filled = true
+                })
+                --
+                local PlayerListTopline = Utility.AddDrawing("Square", {
+                    Size = Vector2.new(PlayerListTabOutline.Size.X, 1),
+                    Position = Vector2.new(PlayerListTabOutline.Position.X, PlayerListTabOutline.Position.Y),
+                    Thickness = 0,
+                    Color = Library.Theme.Accent[1],
+                    Visible = true,
+                    Filled = true
+                })
+                --
+                local PlayerListTitle = Utility.AddDrawing("Text", {
+                    Text = "Player List",
+                    Outline = false,
+                    Font = Library.Theme.Font,
+                    Size = Library.Theme.TextSize,
+                    Position = Vector2.new(PlayerListTabInline.Position.X + 4, PlayerListTabInline.Position.Y + 4),
+                    Color = Library.Theme.Text,
+                    Visible = true
+                })
+                --
+                local PlayerListName = Utility.AddDrawing("Text", {
+                    Text = "Name",
+                    Outline = false,
+                    Font = Library.Theme.Font,
+                    Size = Library.Theme.TextSize,
+                    Position = Vector2.new(PlayerListTabInline.Position.X + 6, PlayerListTabInline.Position.Y + 20),
+                    Color = Library.Theme.Text,
+                    Visible = true
+                })
+                --
+                local PlayerListTeam = Utility.AddDrawing("Text", {
+                    Text = "Team",
+                    Outline = false,
+                    Font = Library.Theme.Font,
+                    Size = Library.Theme.TextSize,
+                    Position = Vector2.new(PlayerListTabInline.Position.X + 182, PlayerListTabInline.Position.Y + 20),
+                    Color = Library.Theme.Text,
+                    Visible = true
+                })
+                --
+                local PlayerListStatus = Utility.AddDrawing("Text", {
+                    Text = "Status",
+                    Outline = false,
+                    Font = Library.Theme.Font,
+                    Size = Library.Theme.TextSize,
+                    Position = Vector2.new(PlayerListTabInline.Position.X + 334, PlayerListTabInline.Position.Y + 20),
+                    Color = Library.Theme.Text,
+                    Visible = true
+                })
+                --
+                function PlayerList:RefreshList(Int)
+                    PlayerListTabInline.Size = Vector2.new(SecondBorderOutline.Size.X - 16, (22 * Int) + 37)
+                    --
+                    PlayerListTabOutline.Size = Vector2.new(PlayerListTabInline.Size.X - 2, PlayerListTabInline.Size.Y - 2)
+                    PlayerListTabOutline.Position = Vector2.new(PlayerListTabInline.Position.X + 1, PlayerListTabInline.Position.Y + 1)
+                    --
+                    PlayerListPage.Size = Vector2.new(PlayerListTabOutline.Size.X - 4, PlayerListTabOutline.Size.Y - 4)
+                    PlayerListPage.Position = Vector2.new(PlayerListTabOutline.Position.X + 2, PlayerListTabOutline.Position.Y + 2)
+                end
+                --
+                function PlayerList:AddPlayer(Player)
+                    PlayerList.PlayersInList += 1
+                    local CurrentList, Removed = PlayerList.PlayersInList, false
+                    --
+                    local PlayerTabInline = Utility.AddDrawing("Square", {
+                        Size = Vector2.new(PlayerListTabInline.Size.X - 2, 22),
+                        Position = Vector2.new(PlayerListTabInline.Position.X + 1, (PlayerListTabInline.Position.Y + 15) + (PlayerList.PlayersInList * 22)),
+                        Thickness = 0,
+                        Color = Library.Theme.Inline,
+                        Visible = Window.SelectedTab == "Settings",
+                        Filled = true
+                    })
+                    --
+                    local PlayerTabOutline = Utility.AddDrawing("Square", {
+                        Size = Vector2.new(PlayerTabInline.Size.X - 2, PlayerTabInline.Size.Y - 2),
+                        Position = Vector2.new(PlayerTabInline.Position.X + 1, PlayerTabInline.Position.Y + 1),
+                        Thickness = 0,
+                        Color = Library.Theme.Outline,
+                        Visible = Window.SelectedTab == "Settings",
+                        Filled = true
+                    })
+                    --
+                    local PlayerName = Utility.AddDrawing("Text", {
+                        Text = Player.Name,
+                        Outline = false,
+                        Font = Library.Theme.Font,
+                        Size = Library.Theme.TextSize,
+                        Position = Vector2.new(PlayerTabInline.Position.X + 4, PlayerTabInline.Position.Y + 4),
+                        Color = Library.Theme.Text,
+                        Visible = Window.SelectedTab == "Settings"
+                    })
+                    --
+                    local PlayerTeam = Utility.AddDrawing("Text", {
+                        Text = Player.Team ~= nil and Player.Team.Name or "Neutral",
+                        Outline = false,
+                        Font = Library.Theme.Font,
+                        Size = Library.Theme.TextSize,
+                        Position = Vector2.new(PlayerTabInline.Position.X + 180, PlayerTabInline.Position.Y + 4),
+                        Color = Player.Team ~= nil and Player.TeamColor.Color or Library.Theme.TextInactive,
+                        Visible = Window.SelectedTab == "Settings"
+                    })
+                    --
+                    local PlayerStatus = Utility.AddDrawing("Text", {
+                        Text = Player == LocalPlayer and "Client" or "None",
+                        Outline = false,
+                        Font = Library.Theme.Font,
+                        Size = Library.Theme.TextSize,
+                        Position = Vector2.new(PlayerTabInline.Position.X + 330, PlayerTabInline.Position.Y + 4),
+                        Color = Player == LocalPlayer and Library.Theme.Accent[1] or Library.Theme.Text,
+                        Visible = Window.SelectedTab == "Settings"
+                    })
+                    --
+                    Tab["Render"][#Tab["Render"] + 1] = PlayerTabInline
+                    Tab["Render"][#Tab["Render"] + 1] = PlayerTabOutline
+                    Tab["Render"][#Tab["Render"] + 1] = PlayerName
+                    Tab["Render"][#Tab["Render"] + 1] = PlayerTeam
+                    Tab["Render"][#Tab["Render"] + 1] = PlayerStatus
+                    --
+                    self:RefreshList(CurrentList)
+                    --
+                    Utility.AddConnection(Library.Communication.Event, function(Type, User)
+                        if Type == "RemovePlayer" then
+                            if User == Player.Name then
+                                Tab:RemoveDrawing(PlayerTabInline)
+                                Tab:RemoveDrawing(PlayerTabOutline)
+                                Tab:RemoveDrawing(PlayerName)
+                                Tab:RemoveDrawing(PlayerTeam)
+                                Tab:RemoveDrawing(PlayerStatus)
+                                --
+                                --[[
+                                    Utility.RemoveDrawing(PlayerTabInline)
+                                    Utility.RemoveDrawing(PlayerTabOutline)
+                                    Utility.RemoveDrawing(PlayerName)
+                                    Utility.RemoveDrawing(PlayerTeam)
+                                    Utility.RemoveDrawing(PlayerStatus)
+                                ]]
+                            end
+                            CurrentList -= 1
+                            self:RefreshList(CurrentList)
+                        end
+                    end)
+                end
+                --
+                function PlayerList:RemovePlayer(Player)
+                    PlayerList[Player.Name] = {}
+                    --
+                    Library.Communication:Fire("RemovePlayer", Player.Name)
+                    --
+                    PlayerList.PlayersInList -= 1
+                    self:RefreshList(PlayerList.PlayersInList)
+                end
+                --
+                Tab["Render"][#Tab["Render"] + 1] = PlayerListTabInline
+                Tab["Render"][#Tab["Render"] + 1] = PlayerListTabOutline
+                Tab["Render"][#Tab["Render"] + 1] = PlayerListTopline
+                Tab["Render"][#Tab["Render"] + 1] = PlayerListName
+                Tab["Render"][#Tab["Render"] + 1] = PlayerListTeam
+                Tab["Render"][#Tab["Render"] + 1] = PlayerListStatus
+                Tab["Render"][#Tab["Render"] + 1] = PlayerListPage
+                Tab["Render"][#Tab["Render"] + 1] = PlayerListTitle
+                --
+                return PlayerList
+            end
+            --
+            Tab["TabInline"] = TabInline
+            Tab["TabOutline"] = TabOutline
+            Tab["TabTitle"] = TabTitle
+            --
+            Tab:Install()
+            --
+            Window.LastTab = TabInline
+            self.Tabs[#self.Tabs + 1] = Tab
+            -- self:RefreshPages()
+            Tab["Render"] = {}
+            return Tab
+        end
+        --
+        function Window:AddSettingsTab(Additional)
+            Additional = typeof(Additional) == "function" and Additional or function() end
+
+            local LocalTheme = {
+                Accent = Library.Theme.Accent[1],
+                Outline = Color3.fromHex("#000005"),
+                Inline = Color3.fromHex("#323232"),
+                LightContrast = Color3.fromHex("#202020"),
+                DarkContrast = Color3.fromHex("#191919"),
+                Text = Color3.fromHex("#e8e8e8"),
+                TextInactive = Color3.fromHex("#aaaaaa")
+            }
+
+            local Settings = Window:Tab("Settings")
+
+            local Theme = Settings:Section("Theme", "Left")
+            
+            Theme:Colorpicker({Title = "Accent", Color = LocalTheme.Accent, Flag = "UIAccent", Callback = function(Color)
+                Library:UpdateTheme({
+                    Accent = Color
+                })
+                LocalTheme.Accent = Color
+            end})
+            
+            Theme:Colorpicker({Title = "Outline", Color = LocalTheme.Outline, Flag = "UIOutline", Callback = function(Color)
+                Library:UpdateTheme({
+                    Outline = Color
+                })
+                LocalTheme.Outline = Color
+            end})
+            
+            Theme:Colorpicker({Title = "Inline", Color = LocalTheme.Inline, Flag = "UIInline", Callback = function(Color)
+                Library:UpdateTheme({
+                    Inline = Color
+                })
+                LocalTheme.Inline = Color
+            end})
+            
+            Theme:Colorpicker({Title = "Inline Contrast", Color = LocalTheme.LightContrast, Flag = "UILightContrast", Callback = function(Color)
+                Library:UpdateTheme({
+                    LightContrast = Color
+                })
+                LocalTheme.LightContrast = Color
+            end})
+            
+            Theme:Colorpicker({Title = "Dark Contrast", Color = LocalTheme.DarkContrast, Flag = "UIDarkContrast", Callback = function(Color)
+                Library:UpdateTheme({
+                    DarkContrast = Color
+                })
+                LocalTheme.DarkContrast = Color
+            end})
+            
+            Theme:Colorpicker({Title = "Text", Color = LocalTheme.Text, Flag = "UIText", Callback = function(Color)
+                Library:UpdateTheme({
+                    Text = Color
+                })
+                LocalTheme.Text = Color
+            end})
+            
+            Theme:Colorpicker({Title = "Text Inactive", Color = LocalTheme.TextInactive, Flag = "UITextInactive", Callback = function(Color)
+                Library:UpdateTheme({
+                    TextInactive = Color
+                })
+                LocalTheme.TextInactive = Color
+            end})
+            
+            Theme:Dropdown({
+                Title = "Theme",
+                List = {"Default", "Neverlose", "Fatality", "Aimware", "Onetap", "Vape", "Gamesesne", "OldAbyss"},
+                Default = "Default",
+                Callback = function(Choosen)
+                    if Choosen == "Default" then
+                        Library:UpdateTheme({
+                            Accent = Color3.fromHex("#7583fa"),
+                            Outline = Color3.fromHex("#000005"),
+                            Inline = Color3.fromHex("#323232"),
+                            LightContrast = Color3.fromHex("#202020"),
+                            DarkContrast = Color3.fromHex("#191919"),
+                            Text = Color3.fromHex("#e8e8e8"),
+                            TextInactive = Color3.fromHex("#aaaaaa")
+                        })
+                    elseif Choosen == "Neverlose" then
+                        Library:UpdateTheme({
+                            Outline = Color3.fromHex("#000005"),
+                            Inline = Color3.fromHex("#0a1e28"),
+                            Accent = Color3.fromHex("#00b4f0"),
+                            Text = Color3.fromHex("#ffffff"),
+                            TextInactive = Color3.fromHex("#afafaf"),
+                            LightContrast = Color3.fromHex("#000f1e"),
+                            DarkContrast = Color3.fromHex("#050514"),
+                        })
+                    elseif Choosen == "Octohook" then
+                        Library:UpdateTheme({
+                            Outline = Color3.fromHex("#000000"),
+                            Inline = Color3.fromHex("#3c3c3c"),
+                            Accent = Color3.fromHex("#8f4b67"),
+                            Text = Color3.fromHex("#ffffff"),
+                            TextInactive = Color3.fromHex("#afafaf"),
+                            LightContrast = Color3.fromHex("#171717"),
+                            DarkContrast = Color3.fromHex("#121112"),
+                        })
+                    elseif Choosen == "Fatality" then
+                        Library:UpdateTheme({
+                            Outline = Color3.fromHex("#322850"),
+                            Inline = Color3.fromHex("#3c3c3c"),
+                            Accent = Color3.fromHex("#f00f50"),
+                            Text = Color3.fromHex("#c8c8ff"),
+                            TextInactive = Color3.fromHex("#afafaf"),
+                            LightContrast = Color3.fromHex("#231946"),
+                            DarkContrast = Color3.fromHex("#191432"),
+                        })
+                    elseif Choosen == "Aimware" then
+                        Library:UpdateTheme({
+                            Outline = Color3.fromHex("#000005"),
+                            Inline = Color3.fromHex("#373737"),
+                            Accent = Color3.fromHex("#c82828"),
+                            Text = Color3.fromHex("#e8e8e8"),
+                            TextInactive = Color3.fromHex("#afafaf"),
+                            LightContrast = Color3.fromHex("#2b2b2b"),
+                            DarkContrast = Color3.fromHex("#191919"),
+                        })
+                    elseif Choosen == "Onetap" then
+                        Library:UpdateTheme({
+                            Outline = Color3.fromHex("#000000"),
+                            Inline = Color3.fromHex("#4e5158"),
+                            Accent = Color3.fromHex("#dda85d"),
+                            Text = Color3.fromHex("#d6d9e0"),
+                            TextInactive = Color3.fromHex("#afafaf"),
+                            LightContrast = Color3.fromHex("#2c3037"),
+                            DarkContrast = Color3.fromHex("#1f2125"),
+                        })
+                    elseif Choosen == "Vape" then
+                        Library:UpdateTheme({
+                            Outline = Color3.fromHex("#0a0a0a"),
+                            Inline = Color3.fromHex("#363636"),
+                            Accent = Color3.fromHex("#26866a"),
+                            Text = Color3.fromHex("#d6d9e0"),
+                            TextInactive = Color3.fromHex("#afafaf"),
+                            LightContrast = Color3.fromHex("#1f1f1f"),
+                            DarkContrast = Color3.fromHex("#1a1a1a"),
+                        })
+                    elseif Choosen == "Gamesesne" then
+                        Library:UpdateTheme({
+                            Outline = Color3.fromHex("#000000"),
+                            Inline = Color3.fromHex("#4e5158"),
+                            Accent = Color3.fromHex("#a7d94d"),
+                            Text = Color3.fromHex("#ffffff"),
+                            TextInactive = Color3.fromHex("#afafaf"),
+                            LightContrast = Color3.fromHex("#171717"),
+                            DarkContrast = Color3.fromHex("#0c0c0c"),
+                        })
+                    elseif Choosen == "OldAbyss" then
+                        Library:UpdateTheme({
+                            Outline = Color3.fromHex("#0a0a0a"),
+                            Inline = Color3.fromHex("#322850"),
+                            Accent = Color3.fromHex("#8c87b4"),
+                            Text = Color3.fromHex("#ffffff"),
+                            TextInactive = Color3.fromHex("#afafaf"),
+                            LightContrast = Color3.fromHex("#1e1e1e"),
+                            DarkContrast = Color3.fromHex("#141414"),
+                        })
+                    end
+                end
+            })
+            
+            local ClickGUI = Settings:Section("Click GUI", "Right")
+            
+            ClickGUI:Toggle({
+                Title = "Enable Anime",
+                Callback = function(State)
+                    Window.ToggleAnime(State)
+                end
+            })
+            
+            ClickGUI:Dropdown({
+                Title = "Anime",
+                List = {"Astolfo", "Violet", "Rem", "Aiko", "Asuka"},
+                Default = "Astolfo",
+                Callback = function(Name)
+                    Window.ChangeAnime(Name)
+                end
+            })
+
+            ClickGUI:Button({
+                Title = "Self Destruct",
+                Callback = function()
+                    Library.SelfDestruct()
+                    Additional()
+                end
+            })
+
+            return Settings
+        end
+        --
+        function Window.Watermark(Title)
+            local Watermark = {
+                Title = Title,
+                FPS = 60,
+                Visible = true
+            }
+            --
+            local WindowOutline = Utility.AddDrawing("Square", {
+                Size = Vector2.new(475, 24),
+                Position = Vector2.new(150, 8),
+                Thickness = 0,
+                Color = Library.Theme.Outline,
+                Visible = true,
+                Filled = true
+            }, Library.Watermark)
+            --
+            local WatermarkIcon = Utility.AddDrawing("Image", {
+                Size = Vector2.new(18, 20),
+                Position = Vector2.new(WindowOutline.Position.X + 2, WindowOutline.Position.Y + 2),
+                Transparency = 1,
+                ZIndex = 3,
+                Visible = true,
+                Data = Library.Theme.Logo
+            }, Library.Watermark)
+            --
+            local WindowOutlineBorder = Utility.AddDrawing("Square", {
+                Size = Vector2.new(WindowOutline.Size.X - 2, WindowOutline.Size.Y - 2),
+                Position = Vector2.new(WindowOutline.Position.X + 1, WindowOutline.Position.Y + 1),
+                Thickness = 0,
+                Color = Library.Theme.Accent[1],
+                Visible = false,
+                Filled = true
+            }, Library.Watermark)
+            --
+            local WindowFrame = Utility.AddDrawing("Square", {
+                Size = Vector2.new(WindowOutlineBorder.Size.X - 2, WindowOutlineBorder.Size.Y - 2),
+                Position = Vector2.new(WindowOutlineBorder.Position.X + 1, WindowOutlineBorder.Position.Y + 1),
+                Thickness = 0,
+                Transparency = 1,
+                Color = Library.Theme.DarkContrast,
+                Visible = true,
+                Filled = true
+            }, Library.Watermark)
+            --
+            local WindowTopline = Utility.AddDrawing("Square", {
+                Size = Vector2.new(WindowOutlineBorder.Size.X, 1),
+                Position = Vector2.new(WindowOutlineBorder.Position.X, WindowOutlineBorder.Position.Y),
+                Thickness = 0,
+                Color = Library.Theme.Accent[1],
+                Visible = true,
+                Filled = true
+            }, Library.Watermark)
+            --
+            Utility.AddConnection(Library.Communication.Event, function(Type, Color)
+                if Type == "Accent" then
+                    WindowOutlineBorder.Color = Color
+                    WindowTopline.Color = Color
+                end
+            end)
+            --
+            local WindowImage = Utility.AddDrawing("Image", {
+                Size = WindowFrame.Size,
+                Position = WindowFrame.Position,
+                Transparency = 1, 
+                Visible = true,
+                Data = Library.Theme.Gradient
+            }, Library.Watermark)
+            --
+            local WindowTitle = Utility.AddDrawing("Text", {
+                Font = Library.Theme.Font,
+                Size = Library.Theme.TextSize,
+                Color = Library.Theme.Text,
+                Text = Watermark.Title .. " | " .. ("%s, %s, %s"):format(os.date("%B"), os.date("%d"), os.date("%Y")),
+                Position = Vector2.new(WindowFrame.Position.X + (WindowFrame.Size.X / 2), WindowOutlineBorder.Position.Y + 4),
+                Visible = true,
+                Center = false,
+                Outline = false
+            }, Library.Watermark)
+            --
+            WindowOutline.Size = Vector2.new(WindowTitle.TextBounds.X + 19, 20)
+            WindowTopline.Size = Vector2.new(WindowOutline.Size.X - 2, 2)
+            WindowFrame.Size = Vector2.new(WindowOutline.Size.X - 2, WindowOutline.Size.Y - 2)
+            --
+            --[[
+                Utility.Loop(1, function()
+                    WindowTitle.Text = ("%s | Ping: %s ms | FPS: %s fps"):format(Watermark.Title, tostring(math.floor(Stats:GetValue())), Watermark.FPS)
+                    Watermark.FPS = 0
+                end)
+            ]]
+            Utility.AddDrag(WindowOutline, Library.Watermark)
+            --
+            Utility.AddConnection(RunService.RenderStepped, function()
+                Watermark.FPS += 1
+                if Watermark.Visible then
+                    local Hours, Minutes, Secs = os.date("*t")["hour"], os.date("*t")["min"], os.date("*t")["sec"]
+                    local Format = Hours > 12 and Hours - 12 or Hours
+                    local AMORPM = Hours > 12 and "PM" or "AM"
+                    local FixZero = string.len(tostring(Secs)) == 1 and "0" .. Secs or Secs
+                    WindowTitle.Text =  ("%s | %s:%s:%s %s | %s, %s, %s, %s"):format(Watermark.Title, Format, Minutes, FixZero, AMORPM, os.date("%A"), os.date("%B"), os.date("%d"), os.date("%Y"))
+
+                    WindowOutline.Visible = true
+                    WindowImage.Visible = true
+                    --
+                    WindowOutline.Size = Vector2.new(WindowTitle.TextBounds.X + 28, 22)
+                    WindowOutlineBorder.Size = WindowOutline.Size
+                    WindowTopline.Size = Vector2.new(WindowOutline.Size.X - 2, 1)
+                    WindowFrame.Size = Vector2.new(WindowOutline.Size.X - 2, WindowOutline.Size.Y - 2)
+                    WindowImage.Size = WindowFrame.Size
+                    WindowTitle.Position = Vector2.new(WindowTopline.Position.X + 22, WindowTopline.Position.Y + 4)
+                    --
+                    WindowFrame.Visible = true
+                    WindowTitle.Visible = true
+                    WatermarkIcon.Visible = true
+                    WindowTopline.Visible = true
+                else
+                    WatermarkIcon.Visible = false
+                    WindowOutline.Visible = false
+                    WindowFrame.Visible = false
+                    WindowTitle.Visible = false
+                    WindowTopline.Visible = false
+                end
+            end)
+            --
+            return Watermark
+        end
+
+        return Window
+    end
 end
 
-return lib
+--
+Utility.AddConnection(UserInput.InputBegan, function(Input, Useless)
+    if Useless then
+        return
+    end
+    if Input.KeyCode == Enum.KeyCode.RightShift then
+        Library:ChangeVisible(not Library.WindowVisible)
+    end
+end)
+--
+local Maid = {
+    Connections = {}
+}
+
+Maid.AddConnection = function(Specific, Type, Callback)
+    local Connection = Type:Connect(Callback)
+
+    Specific = Specific or #Maid.Connections + 1
+    Maid.Connections[Specific] = Connection
+    
+    return Connection
+end
+
+Maid.DelConnection = function(Specific)
+    Maid.Connections[Specific]:Disconnect()
+end
+
+Maid.DisconnectAll = function()
+    for Idx, Val in pairs(Maid.Connections) do
+        Val:Disconnect()
+    end
+end
