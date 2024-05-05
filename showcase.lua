@@ -7,7 +7,7 @@ local networkClient = game:GetService("NetworkClient")
 local virtualUser = game:GetService("VirtualUser")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local userInputService = game:GetService("UserInputService")
-local lib = loadstring(game:HttpGet"https://raw.githubusercontent.com/killjoyelite67/Prim-Ui-lib/main/uilibPrim.lua")()
+local lib = loadstring(game:HttpGet"https://raw.githubusercontent.com/Ceypi/AnotherLibrary/main/Library.lua")()
 local loadConfig;
 local saveConfig; local fps;
 
@@ -289,7 +289,7 @@ coroutine.wrap(function()
     runService.Heartbeat:Connect(HeartbeatUpdate)
 end)()
 
-local window = lib.init("Primordial", Color3.fromRGB(218, 154, 169), Enum.KeyCode.Insert)
+local window = lib.init("Primordial", Color3.fromRGB(218, 154, 169), Enum.KeyCode.End)
 local general = window.createTab("general", "rbxassetid://8667132506")
     local aim = general.createSection("aim")
         local silent = aim.createToggle("silent aim", false, "silentaim", function(bool)
